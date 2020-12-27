@@ -11,6 +11,7 @@ itemBtn2.addEventListener('click', addToCartItem2);
 itemBtn3.addEventListener('click', addToCartItem3);
 cartList.addEventListener('click', removeItem);
 clearBtn.addEventListener('click', clearCart);
+document.addEventListener('DOMContentLoaded', getCarts);
 
 //Define functions
 function addToCartItem1(e) {
@@ -21,6 +22,8 @@ function addToCartItem1(e) {
     btn.textContent = 'Remove';
     li.appendChild(btn);
     cartList.appendChild(li);
+
+    storeCartInLS(document.getElementById('item-button-1').parentNode.parentNode.firstElementChild.textContent);
 }
 
 function addToCartItem2(e) {
@@ -31,6 +34,8 @@ function addToCartItem2(e) {
     btn.textContent = 'Remove';
     li.appendChild(btn);
     cartList.appendChild(li);
+
+    storeCartInLS(document.getElementById('item-button-2').parentNode.parentNode.firstElementChild.textContent);
 }
 
 function addToCartItem3(e) {
@@ -41,6 +46,8 @@ function addToCartItem3(e) {
     btn.textContent = 'Remove';
     li.appendChild(btn);
     cartList.appendChild(li);
+
+    storeCartInLS(document.getElementById('item-button-3').parentNode.parentNode.firstElementChild.textContent);
 }
 
 function removeItem(e) {
@@ -48,6 +55,8 @@ function removeItem(e) {
         if (confirm("Are you sure?")) {
             let ele = e.target.parentElement;
             ele.remove();
+
+            removeFromLS(ele);
         }
     }
 }
@@ -58,4 +67,56 @@ function clearCart(e) {
     while (cartList.firstChild) {
         cartList.removeChild(cartList.firstChild);
     }
+
+    localStorage.clear();
+}
+
+//Store Cart in LS
+function storeCartInLS(cart) {
+    let carts;
+    if (localStorage.getItem('carts') === null) {
+        carts = [];
+    } else {
+        carts = JSON.parse(localStorage.getItem('carts'));
+    }
+    carts.push(cart);
+
+    localStorage.setItem('carts', JSON.stringify(carts));
+}
+
+function getCarts() {
+    let carts;
+    if (localStorage.getItem('carts') === null) {
+        carts = [];
+    } else {
+        carts = JSON.parse(localStorage.getItem('carts'));
+    }
+
+    carts.forEach(cart => {
+        let li = document.createElement('li');
+        li.appendChild(document.createTextNode(cart));
+        let btn = document.createElement('button');
+        btn.setAttribute('id', 'removeBtn');
+        btn.textContent = 'Remove';
+        li.appendChild(btn);
+        cartList.appendChild(li);
+    });
+}
+
+function removeFromLS(cartItem) {
+    let carts;
+    if (localStorage.getItem('carts') === null) {
+        carts = [];
+    } else {
+        carts = JSON.parse(localStorage.getItem('carts'));
+    }
+
+    let li = cartItem.firstChild;
+
+    carts.forEach((cart, index) => {
+        if (li.textContent.trim() === cart) {
+            carts.splice(index, 1);
+        }
+    });
+    localStorage.setItem('carts', JSON.stringify(carts));
 }
