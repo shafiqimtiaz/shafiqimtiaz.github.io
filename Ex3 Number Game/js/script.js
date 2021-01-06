@@ -29,11 +29,11 @@ document.getElementById("submitguess").onclick = function () {
             }
             else if (input > randValue) {
                 guess++;
-                alert("Correct answer is smaller! " + randValue);
+                alert("Correct answer is smaller!");
             }
             else {
                 guess++;
-                alert("Correct answer is greater! " + randValue);
+                alert("Correct answer is greater!");
             }
         }
     }
