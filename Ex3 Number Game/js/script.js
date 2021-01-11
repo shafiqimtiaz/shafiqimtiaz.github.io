@@ -17,24 +17,35 @@ let guess = 1;
 document.getElementById("submitguess").onclick = function () {
     // number guessed by user     
     // let input = document.getElementById("guessField").value;
+
+
     for (let i = 0; i <= 3; i++) {
         if (i == 3) {
             alert("YOU LOSE :(\nCorrect answer was " + randValue);
             break;
         } else {
             let input = prompt("Enter Guess:");
-            if (input == randValue) {
-                alert("CONGRATULATIONS, YOU WIN !!!\nATTEMPT: " + guess);
-                break;
-            }
-            else if (input > randValue) {
-                guess++;
-                alert("Correct answer is smaller!");
+
+            if (isNaN(input)) {
+                alert("Please Enter a Number !!");
             }
             else {
-                guess++;
-                alert("Correct answer is greater!");
+
+                if (input == randValue) {
+                    alert("CONGRATULATIONS, YOU WIN !!!\nATTEMPT: " + guess);
+                    break;
+                }
+                else if (input > randValue) {
+                    guess++;
+                    alert("Correct answer is smaller!");
+                }
+                else {
+                    guess++;
+                    alert("Correct answer is greater!");
+                }
+
             }
+
         }
     }
     location.reload();
