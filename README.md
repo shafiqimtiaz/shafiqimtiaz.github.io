@@ -81,4 +81,4 @@ Take the provided codebase and refactor it to make it accessible. Don't forget t
 
 
 - - -
-© 2019 Trilogy Education Services, a 2U, Inc. brand. All Rights Reserved.
+© Shafiq Imtiaz
