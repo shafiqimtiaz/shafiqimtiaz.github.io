@@ -1,3 +1,13 @@
-body{
-    font-family: 'Cascadia Code', sans-serif;
+body {
+	font-family: "Cascadia Code", sans-serif;
+}
+
+#language > .col > .card:hover {
+	/* background-color: rgb(110, 110, 110);
+	color: white; */
+	transform: scale(1.05);
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+#projects > .col > .card:hover {
 }
