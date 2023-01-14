@@ -1,4 +1,3 @@
 ## shafiqimtiaz.github.io
 
-Portfolio website
-https://shafiqimtiaz.github.io/
+Link - https://shafiqimtiaz.github.io/
