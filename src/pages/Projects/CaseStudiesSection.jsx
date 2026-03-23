@@ -43,11 +43,11 @@ export default function CaseStudiesSection() {
               <div className="mt-6 w-full">
                 <div className="w-full border border-[rgba(73,72,71,0.3)] bg-[var(--theme-surface-high)] p-6">
                   <div className="font-headline text-[0.72rem] tracking-[0.18em] text-[var(--theme-primary)] uppercase">
-                    {project.monitor}
+                    {project.highlights}
                   </div>
                   <div className="font-headline mt-5 grid gap-3 text-[0.98rem] text-[var(--theme-secondary)]">
-                    {project.highlights.map((highlight) => (
-                      <div key={highlight}>&gt; {highlight}</div>
+                    {project.details.map((detail) => (
+                      <div key={detail}>&gt; {detail}</div>
                     ))}
                   </div>
                 </div>
