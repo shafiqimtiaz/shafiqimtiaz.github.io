@@ -17,10 +17,3 @@ For a production build:
 npm run build
 npm run preview
 ```
-
-## Canonical class suggestion feature
-
-This repository now includes utility logic for validating and normalizing CSS utility classes in suggestions.
-
-- `src/utils/canonicalClasses.js`: canonical set + alias mapping + resolver/filter Pipeline
-- `src/utils/canonicalClasses.test.js`: tests for canonical behavior
