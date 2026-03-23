@@ -1,6 +1,6 @@
 ## shafiqimtiaz.github.io
 
-Link - https://shafiqimtiaz.github.io/
+Link - https://shafiqimtiaz.vercel.app/
 
 ## Local development
 
