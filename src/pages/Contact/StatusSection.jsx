@@ -71,7 +71,7 @@ export function StatusSection() {
             };
           }
           return item;
-        }),
+        })
       );
     }, 3000);
     return () => window.clearInterval(intervalId);
@@ -136,7 +136,10 @@ function formatDuration(ms) {
 }
 
 function formatUtc(date) {
-  return date.toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC');
+  return date
+    .toISOString()
+    .replace('T', ' ')
+    .replace(/\.\d+Z$/, ' UTC');
 }
 
 export function InfoColumnsSection() {
