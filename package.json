@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run format && npm run lint && vite build",
+    "vercel-build": "npm run format && npm run lint && vite build",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "lint": "echo \"No lint configured\"",
-    "prepare": "husky install"
+    "lint": "echo \"No lint configured\""
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -19,7 +19,6 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
     "@vitejs/plugin-react": "^4.4.1",
-    "husky": "^9.1.7",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4.2.2",
