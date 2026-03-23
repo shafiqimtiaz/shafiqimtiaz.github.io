@@ -1,9 +1,7 @@
-// Get the UI elements
 let form = document.querySelector('#book-form');
 let booklist = document.querySelector('#book-list');
 
 
-// Book Class
 class Book {
     constructor(title, author, isbn) {
         this.title = title;
@@ -12,7 +10,6 @@ class Book {
     }
 }
 
-// UI Class
 class UI {
     static addToBooklist(book) {
         let list = document.querySelector('#book-list');
@@ -55,7 +52,6 @@ class UI {
     }
 }
 
-// Local Storage Class
 class Store {
     static getBooks() {
         let books;
@@ -95,13 +91,9 @@ class Store {
     }
 }
 
-// Add Event Listener
 form.addEventListener('submit', newBook);
 booklist.addEventListener('click', removeBook);
 document.addEventListener('DOMContentLoaded', Store.displayBooks());
-
-
-// Define functions
 
 function newBook(e) {
     let title = document.querySelector("#title").value,

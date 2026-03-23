@@ -29,15 +29,13 @@ export default function useTheme() {
 
     try {
       localStorage.setItem(STORAGE_KEY, theme);
-    } catch (error) {
-      // Ignore storage failures so the UI still works in restricted contexts.
-    }
+    } catch (error) {}
   }, [theme]);
 
   return {
     theme,
     isDark: theme === 'dark',
     setTheme,
-    toggleTheme: () => setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))
+    toggleTheme: () => setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark')),
   };
 }

@@ -1,6 +1,5 @@
 import useTheme from '../hooks/useTheme';
 
-// Theme switcher that keeps the portfolio theme in sync with localStorage.
 export default function ThemeToggle() {
   const { isDark, toggleTheme } = useTheme();
   const icon = isDark ? 'light_mode' : 'dark_mode';
