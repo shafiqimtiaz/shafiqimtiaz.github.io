@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 import About from './pages/About';
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="*" element={<Home />} />
       </Routes>
       <Footer />
+      <SpeedInsights />
     </>
   );
 }
