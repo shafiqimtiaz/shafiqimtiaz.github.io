@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>SHAFIQ IMTIAZ | PROJECTS</title>
+  <script>
+    (function () {
+      var savedTheme = "dark";
+      try {
+        savedTheme = localStorage.getItem("portfolio-theme") || "dark";
+      } catch (error) {
+        savedTheme = "dark";
+      }
+      var theme = savedTheme === "light" ? "light" : "dark";
+      document.documentElement.classList.toggle("theme-light", theme === "light");
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link href="docs/styles/theme.css" rel="stylesheet" />
+  <script src="docs/styles/theme-toggle.js" defer></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface": "#ffffff",
+            "background": "#0e0e0e",
+            "tertiary": "#ffc563",
+            "surface-container-lowest": "#000000",
+            "surface-container-low": "#131313",
+            "surface-container": "#1a1919",
+            "surface-container-high": "#201f1f",
+            "surface-container-highest": "#262626",
+            "primary": "#9cff93",
+            "primary-dim": "#00ec3b",
+            "secondary": "#00e3fd",
+            "outline": "#777575",
+            "outline-variant": "#494847",
+            "on-surface-variant": "#adaaaa"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Space Grotesk"]
+          },
+          borderRadius: {
+            "DEFAULT": "0rem",
+            "lg": "0rem",
+            "xl": "0rem",
+            "full": "9999px"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    }
+    .neon-glow-primary:hover {
+      box-shadow: 0 0 15px rgba(156, 255, 147, 0.3);
+    }
+    .neon-glow-secondary:hover {
+      box-shadow: 0 0 15px rgba(0, 227, 253, 0.3);
+    }
+    .grid-pattern {
+      background-image: radial-gradient(circle, #494847 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.05;
+    }
+    .cursor-blink {
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-on-surface selection:bg-primary selection:text-[#006413]">
+  <header class="fixed top-0 z-50 flex w-full items-center justify-between bg-surface-container-low px-6 py-4 shadow-[0_0_15px_rgba(156,255,147,0.1)] lg:px-12">
+    <div class="font-headline text-xl font-bold tracking-tighter text-primary">SHAFIQ_IMTIAZ.SYS</div>
+    <nav class="hidden items-center gap-8 md:flex">
+      <a class="text-xs uppercase tracking-[0.05em] text-on-surface-variant transition-colors hover:text-primary" href="index.html">HOME</a>
+      <a class="border-b-2 border-primary pb-1 text-xs uppercase tracking-[0.05em] text-primary" href="projects.html">PROJECTS</a>
+      <a class="text-xs uppercase tracking-[0.05em] text-on-surface-variant transition-colors hover:text-primary" href="about.html">ABOUT</a>
+      <a class="text-xs uppercase tracking-[0.05em] text-on-surface-variant transition-colors hover:text-primary" href="contact.html">CONTACT</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <a class="p-2 text-primary transition-all duration-200 hover:bg-surface-container active:opacity-80" href="https://github.com/shafiqimtiaz" target="_blank" rel="noreferrer" aria-label="GitHub">
+        <span class="material-symbols-outlined">terminal</span>
+      </a>
+      <a class="p-2 text-primary transition-all duration-200 hover:bg-surface-container active:opacity-80" href="docs/Shafiq-Imtiaz-Resume.pdf" target="_blank" rel="noreferrer" aria-label="Resume">
+        <span class="material-symbols-outlined">description</span>
+      </a>
+      <button class="flex items-center gap-2 p-2 text-primary transition-all duration-200 hover:bg-surface-container active:opacity-80" type="button" data-theme-toggle aria-label="Switch to light theme">
+        <span class="material-symbols-outlined" data-theme-icon>light_mode</span>
+        <span class="hidden font-label text-[10px] tracking-widest md:inline" data-theme-label>LIGHT</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-6 pb-24 pt-32 lg:px-12">
+    <section class="mb-24">
+      <div class="flex flex-col justify-between gap-8 border-l-4 border-primary pl-6 md:flex-row md:items-end">
+        <div>
+          <p class="mb-2 font-label text-sm uppercase tracking-widest text-primary">Core_System / Impact_Record</p>
+          <h1 class="font-headline text-5xl font-bold uppercase leading-none tracking-tighter md:text-7xl">
+            Selected_Projects<span class="cursor-blink text-primary">█</span>
+          </h1>
+        </div>
+        <div class="max-w-md">
+          <p class="body-lg text-on-surface-variant">
+            Experience highlights drawn from product, platform, and AI work across Flexspring. These are resume-based case snapshots rather than public code drops.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      <article class="group relative flex flex-col gap-6 border border-transparent bg-surface-container-low p-8 transition-all duration-300 hover:border-primary/20">
+        <div class="pointer-events-none absolute inset-0 grid-pattern"></div>
+        <div class="z-10 flex items-start justify-between">
+          <span class="bg-secondary/10 px-2 py-1 font-label text-xs tracking-widest text-secondary">DEPLOYED_PRODUCTION</span>
+          <span class="font-label text-xs text-on-surface-variant">001</span>
+        </div>
+        <div class="z-10 border border-outline-variant/10 bg-surface-container p-6">
+          <div class="mb-3 font-label text-[10px] uppercase tracking-widest text-primary">FILE_MANAGER_SERVICE</div>
+          <div class="space-y-3 font-label text-sm text-secondary">
+            <div>&gt; Reduced file-processing latency by 40%</div>
+            <div>&gt; Scaled to 500+ concurrent requests</div>
+            <div>&gt; Built on Quarkus, S3, SQS, MongoDB</div>
+          </div>
+        </div>
+        <div class="z-10 flex flex-col gap-4">
+          <h2 class="font-headline text-3xl font-bold uppercase tracking-tight text-on-surface transition-colors group-hover:text-primary">Flexspring_File_Manager</h2>
+          <p class="font-body leading-relaxed text-on-surface-variant">
+            Designed and launched a new microservice for file management and processing. The solution improved performance, handled scale reliably, and extended Flexspring's cloud-native architecture with AWS-backed asynchronous workflows.
+          </p>
+        </div>
+        <div class="z-10 border-l-2 border-tertiary bg-surface-container-lowest p-4 font-label text-[10px]">
+          <div class="flex flex-wrap gap-x-4 gap-y-2 opacity-80">
+            <span class="text-tertiary"># <span class="text-on-surface">JAVA</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">QUARKUS</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">AWS_S3</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">AWS_SQS</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">MONGODB</span></span>
+          </div>
+        </div>
+        <div class="z-10 mt-auto flex gap-4 pt-4">
+          <a class="neon-glow-primary flex-1 bg-primary py-3 text-center font-label text-xs font-bold uppercase tracking-widest text-[#006413] transition-all hover:bg-primary-dim" href="docs/Shafiq-Imtiaz-Resume.pdf" target="_blank" rel="noreferrer">
+            Resume_PDF_
+          </a>
+          <a class="neon-glow-secondary flex-1 border border-secondary py-3 text-center font-label text-xs font-bold uppercase tracking-widest text-secondary transition-all hover:bg-secondary/10" href="contact.html">
+            Contact_
+          </a>
+        </div>
+      </article>
+
+      <article class="group relative flex flex-col gap-6 border border-transparent bg-surface-container-low p-8 transition-all duration-300 hover:border-primary/20 lg:mt-12">
+        <div class="pointer-events-none absolute inset-0 grid-pattern"></div>
+        <div class="z-10 flex items-start justify-between">
+          <span class="bg-secondary/10 px-2 py-1 font-label text-xs tracking-widest text-secondary">REVENUE_ENABLEMENT</span>
+          <span class="font-label text-xs text-on-surface-variant">002</span>
+        </div>
+        <div class="z-10 border border-outline-variant/10 bg-surface-container p-6">
+          <div class="mb-3 font-label text-[10px] uppercase tracking-widest text-primary">MONITOR_PILOT</div>
+          <div class="space-y-3 font-label text-sm text-secondary">
+            <div>&gt; Accelerated onboarding by 50%</div>
+            <div>&gt; Generated $200K+ in upsell revenue</div>
+            <div>&gt; Modernized UI performance by 65%</div>
+          </div>
+        </div>
+        <div class="z-10 flex flex-col gap-4">
+          <h2 class="font-headline text-3xl font-bold uppercase tracking-tight text-on-surface transition-colors group-hover:text-primary">Monitor_Pilot</h2>
+          <p class="font-body leading-relaxed text-on-surface-variant">
+            Built and deployed a React and TypeScript dashboard used to improve customer onboarding and visibility. The project combined stronger UX, faster load performance, and measurable commercial impact.
+          </p>
+        </div>
+        <div class="z-10 border-l-2 border-tertiary bg-surface-container-lowest p-4 font-label text-[10px]">
+          <div class="flex flex-wrap gap-x-4 gap-y-2 opacity-80">
+            <span class="text-tertiary"># <span class="text-on-surface">REACT</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">TYPESCRIPT</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">BOOTSTRAP_5</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">REST_APIS</span></span>
+          </div>
+        </div>
+        <div class="z-10 mt-auto flex gap-4 pt-4">
+          <a class="neon-glow-primary flex-1 bg-primary py-3 text-center font-label text-xs font-bold uppercase tracking-widest text-[#006413] transition-all hover:bg-primary-dim" href="about.html">
+            More_Context_
+          </a>
+          <a class="neon-glow-secondary flex-1 border border-secondary py-3 text-center font-label text-xs font-bold uppercase tracking-widest text-secondary transition-all hover:bg-secondary/10" href="contact.html">
+            Connect_
+          </a>
+        </div>
+      </article>
+
+      <article class="group relative flex flex-col gap-6 border border-transparent bg-surface-container-low p-8 transition-all duration-300 hover:border-primary/20">
+        <div class="pointer-events-none absolute inset-0 grid-pattern"></div>
+        <div class="z-10 flex items-start justify-between">
+          <span class="bg-secondary/10 px-2 py-1 font-label text-xs tracking-widest text-secondary">AI_INITIATIVE</span>
+          <span class="font-label text-xs text-on-surface-variant">003</span>
+        </div>
+        <div class="z-10 border border-outline-variant/10 bg-surface-container p-6">
+          <div class="mb-3 font-label text-[10px] uppercase tracking-widest text-primary">RAG_CHATBOT</div>
+          <div class="space-y-3 font-label text-sm text-secondary">
+            <div>&gt; Runner-up at Flexspring Hackathon</div>
+            <div>&gt; Built with Crewdle AI and company data</div>
+            <div>&gt; Foundation for future AI-powered features</div>
+          </div>
+        </div>
+        <div class="z-10 flex flex-col gap-4">
+          <h2 class="font-headline text-3xl font-bold uppercase tracking-tight text-on-surface transition-colors group-hover:text-primary">AI_Chatbot_Initiative</h2>
+          <p class="font-body leading-relaxed text-on-surface-variant">
+            Helped turn a hackathon prototype into a broader product direction by building a retrieval-augmented chatbot that surfaced internal knowledge and demonstrated real potential for enterprise AI features.
+          </p>
+        </div>
+        <div class="z-10 border-l-2 border-tertiary bg-surface-container-lowest p-4 font-label text-[10px]">
+          <div class="flex flex-wrap gap-x-4 gap-y-2 opacity-80">
+            <span class="text-tertiary"># <span class="text-on-surface">RAG</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">AI_CHATBOT</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">KNOWLEDGE_BASE</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">PRODUCT_DISCOVERY</span></span>
+          </div>
+        </div>
+        <div class="z-10 mt-auto flex gap-4 pt-4">
+          <a class="neon-glow-primary flex-1 bg-primary py-3 text-center font-label text-xs font-bold uppercase tracking-widest text-[#006413] transition-all hover:bg-primary-dim" href="about.html">
+            About_AI_
+          </a>
+          <a class="neon-glow-secondary flex-1 border border-secondary py-3 text-center font-label text-xs font-bold uppercase tracking-widest text-secondary transition-all hover:bg-secondary/10" href="contact.html">
+            Discuss_
+          </a>
+        </div>
+      </article>
+
+      <article class="group relative flex flex-col gap-6 border border-transparent bg-surface-container-low p-8 transition-all duration-300 hover:border-primary/20 lg:mt-12">
+        <div class="pointer-events-none absolute inset-0 grid-pattern"></div>
+        <div class="z-10 flex items-start justify-between">
+          <span class="bg-secondary/10 px-2 py-1 font-label text-xs tracking-widest text-secondary">PLATFORM_MODERNIZATION</span>
+          <span class="font-label text-xs text-on-surface-variant">004</span>
+        </div>
+        <div class="z-10 border border-outline-variant/10 bg-surface-container p-6">
+          <div class="mb-3 font-label text-[10px] uppercase tracking-widest text-primary">JAVA17_SPRINGBOOT3</div>
+          <div class="space-y-3 font-label text-sm text-secondary">
+            <div>&gt; Improved CI/CD efficiency by 35%</div>
+            <div>&gt; Reduced production incidents by 60%</div>
+            <div>&gt; Enabled real-time data streaming improvements</div>
+          </div>
+        </div>
+        <div class="z-10 flex flex-col gap-4">
+          <h2 class="font-headline text-3xl font-bold uppercase tracking-tight text-on-surface transition-colors group-hover:text-primary">Backend_Modernization_Program</h2>
+          <p class="font-body leading-relaxed text-on-surface-variant">
+            Modernized backend services and legacy APIs by migrating to Java 17 and Spring Boot 3, improving maintainability, delivery speed, and runtime reliability across microservice environments.
+          </p>
+        </div>
+        <div class="z-10 border-l-2 border-tertiary bg-surface-container-lowest p-4 font-label text-[10px]">
+          <div class="flex flex-wrap gap-x-4 gap-y-2 opacity-80">
+            <span class="text-tertiary"># <span class="text-on-surface">JAVA_17</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">SPRING_BOOT_3</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">MICROSERVICES</span></span>
+            <span class="text-tertiary"># <span class="text-on-surface">CI_CD</span></span>
+          </div>
+        </div>
+        <div class="z-10 mt-auto flex gap-4 pt-4">
+          <a class="neon-glow-primary flex-1 bg-primary py-3 text-center font-label text-xs font-bold uppercase tracking-widest text-[#006413] transition-all hover:bg-primary-dim" href="docs/Shafiq-Imtiaz-Resume.pdf" target="_blank" rel="noreferrer">
+            Resume_PDF_
+          </a>
+          <a class="neon-glow-secondary flex-1 border border-secondary py-3 text-center font-label text-xs font-bold uppercase tracking-widest text-secondary transition-all hover:bg-secondary/10" href="contact.html">
+            Contact_
+          </a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="mt-24 flex w-full flex-col items-center justify-between gap-4 bg-surface-container-low px-6 pb-12 pt-8 md:flex-row lg:px-12">
+    <div class="font-headline font-bold uppercase tracking-tighter text-primary">©2026_SHAFIQ_IMTIAZ</div>
+    <div class="flex gap-8">
+      <a class="font-space-grotesk text-[10px] uppercase tracking-widest text-outline-variant transition-colors hover:text-tertiary" href="https://github.com/shafiqimtiaz" target="_blank" rel="noreferrer">GITHUB</a>
+      <a class="font-space-grotesk text-[10px] uppercase tracking-widest text-outline-variant transition-colors hover:text-tertiary" href="https://linkedin.com/in/shafiqimtiaz" target="_blank" rel="noreferrer">LINKEDIN</a>
+      <a class="font-space-grotesk text-[10px] uppercase tracking-widest text-outline-variant transition-colors hover:text-tertiary" href="contact.html">CONTACT</a>
+    </div>
+    <div class="flex items-center gap-2 font-label text-[10px] text-outline-variant">
+      STATUS: <span class="text-primary">ONLINE</span>
+      <span class="h-2 w-2 animate-pulse bg-primary"></span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,572 +1,339 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-
+<html class="dark" lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta property="og:description" content="Shafiq Imtiaz - Full-Stack Software Developer" />
-    <meta property="og:image" content="docs/images/preview.png" />
-    <script>
-        (function () {
-            var savedTheme = localStorage.getItem("theme");
-            var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
-            var theme = savedTheme || (prefersLight ? "light" : "dark");
-            document.documentElement.setAttribute("data-theme", theme);
-        })();
-    </script>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
-
-    <link href="docs/styles/styles.css" rel="stylesheet" type="text/css" charset="utf-8" />
-
-    <title>Shafiq Imtiaz | Software Developer</title>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>SHAFIQ IMTIAZ // TERMINAL_EDITORIAL_V1.0</title>
+  <script>
+    (function () {
+      var savedTheme = "dark";
+      try {
+        savedTheme = localStorage.getItem("portfolio-theme") || "dark";
+      } catch (error) {
+        savedTheme = "dark";
+      }
+      var theme = savedTheme === "light" ? "light" : "dark";
+      document.documentElement.classList.toggle("theme-light", theme === "light");
+      document.documentElement.classList.toggle("dark", theme === "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link href="docs/styles/theme.css" rel="stylesheet" />
+  <script src="docs/styles/theme-toggle.js" defer></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "error-container": "#b92902",
+            "on-surface": "#ffffff",
+            "error": "#ff7351",
+            "secondary-fixed-dim": "#00d7f0",
+            "secondary-dim": "#00d4ec",
+            "secondary-fixed": "#26e6ff",
+            "background": "#0e0e0e",
+            "tertiary": "#ffc563",
+            "surface-variant": "#262626",
+            "surface": "#0e0e0e",
+            "primary-dim": "#00ec3b",
+            "on-tertiary-fixed-variant": "#5e4000",
+            "inverse-primary": "#006f16",
+            "on-tertiary-fixed": "#382400",
+            "primary-fixed-dim": "#00ec3b",
+            "surface-container-low": "#131313",
+            "tertiary-dim": "#eda600",
+            "tertiary-fixed-dim": "#eda600",
+            "tertiary-fixed": "#feb300",
+            "on-primary": "#006413",
+            "primary": "#9cff93",
+            "error-dim": "#d53d18",
+            "surface-tint": "#9cff93",
+            "surface-container-highest": "#262626",
+            "surface-container": "#1a1919",
+            "on-error": "#450900",
+            "inverse-on-surface": "#565554",
+            "primary-container": "#00fc40",
+            "surface-bright": "#2c2c2c",
+            "on-primary-container": "#005a10",
+            "surface-container-lowest": "#000000",
+            "outline": "#777575",
+            "tertiary-container": "#feb300",
+            "on-secondary-fixed": "#003a42",
+            "secondary-container": "#006875",
+            "on-secondary": "#004d57",
+            "on-primary-fixed-variant": "#006513",
+            "on-error-container": "#ffd2c8",
+            "secondary": "#00e3fd",
+            "primary-fixed": "#00fc40",
+            "on-primary-fixed": "#00440a",
+            "on-secondary-container": "#e8fbff",
+            "surface-container-high": "#201f1f",
+            "on-tertiary": "#5e4000",
+            "inverse-surface": "#fcf8f8",
+            "on-surface-variant": "#adaaaa",
+            "outline-variant": "#494847",
+            "surface-dim": "#0e0e0e",
+            "on-secondary-fixed-variant": "#005964",
+            "on-tertiary-container": "#523700",
+            "on-background": "#ffffff"
+          },
+          fontFamily: {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Space Grotesk"]
+          },
+          borderRadius: {
+            "DEFAULT": "0px",
+            "lg": "0px",
+            "xl": "0px",
+            "full": "9999px"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    }
+    .crt-overlay {
+      background:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      background-size: 100% 2px, 3px 100%;
+      pointer-events: none;
+    }
+    .neon-glow-primary {
+      box-shadow: 0 0 15px rgba(156, 255, 147, 0.2);
+    }
+    .neon-glow-secondary {
+      box-shadow: 0 0 15px rgba(0, 227, 253, 0.2);
+    }
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+    .cursor-blink {
+      animation: blink 1s step-end infinite;
+    }
+  </style>
 </head>
-
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#home">
-                <span class="brand-text">SI</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-                <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href="#home">Home</a>
-                    <a class="nav-link" href="#about">About</a>
-                    <a class="nav-link" href="#certifications">Certifications</a>
-                    <a class="nav-link" href="#experience">Experience</a>
-                    <a class="nav-link" href="#skills">Skills</a>
-                    <a class="nav-link" href="#projects">Projects</a>
-                    <a class="nav-link" href="#contact">Contact</a>
-                    <button class="btn theme-toggle-btn ms-md-3 mt-3 mt-md-0" id="themeToggle" type="button"
-                        aria-label="Toggle color theme">
-                        <i class="bi bi-sun-fill" id="themeToggleIcon"></i>
-                        <span id="themeToggleLabel">Light Mode</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+  <header class="fixed top-0 z-50 flex w-full items-center justify-between bg-surface-container-low px-6 py-4 shadow-[0_0_15px_rgba(156,255,147,0.1)] lg:px-12">
+    <div class="font-headline text-xl font-bold tracking-tighter text-primary">SHAFIQ_IMTIAZ.SYS</div>
+    <nav class="hidden items-center gap-8 md:flex">
+      <a class="border-b-2 border-primary pb-1 text-xs uppercase tracking-[0.05em] text-primary" href="index.html">HOME</a>
+      <a class="text-xs uppercase tracking-[0.05em] text-on-surface-variant transition-colors hover:text-primary" href="projects.html">PROJECTS</a>
+      <a class="text-xs uppercase tracking-[0.05em] text-on-surface-variant transition-colors hover:text-primary" href="about.html">ABOUT</a>
+      <a class="text-xs uppercase tracking-[0.05em] text-on-surface-variant transition-colors hover:text-primary" href="contact.html">CONTACT</a>
     </nav>
+    <div class="flex items-center gap-4">
+      <a class="p-2 text-primary transition-all duration-200 hover:bg-surface-container active:opacity-80" href="mailto:shafiqimtiaz@gmail.com" aria-label="Email">
+        <span class="material-symbols-outlined">terminal</span>
+      </a>
+      <a class="p-2 text-primary transition-all duration-200 hover:bg-surface-container active:opacity-80" href="https://linkedin.com/in/shafiqimtiaz" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+        <span class="material-symbols-outlined">settings_ethernet</span>
+      </a>
+      <button class="flex items-center gap-2 p-2 text-primary transition-all duration-200 hover:bg-surface-container active:opacity-80" type="button" data-theme-toggle aria-label="Switch to light theme">
+        <span class="material-symbols-outlined" data-theme-icon>light_mode</span>
+        <span class="hidden font-label text-[10px] tracking-widest md:inline" data-theme-label>LIGHT</span>
+      </button>
+    </div>
+  </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section" id="home">
-        <div class="hero-content">
-            <div class="container">
-                <div class="row align-items-center min-vh-100">
-                    <div class="col-lg-7">
-                        <div class="hero-text">
-                            <p class="hero-greeting">Hello, I'm</p>
-                            <h1 class="hero-name">Shafiq Imtiaz</h1>
-                            <div class="hero-titles">
-                                <span class="title-item">Full-Stack Developer</span>
-                                <span class="title-divider">|</span>
-                                <span class="title-item">Software Engineer</span>
-                            </div>
-                            <p class="hero-tagline">Building scalable, cloud-native systems and modernizing enterprise architectures with a focus on ownership and technical excellence.</p>
-                            <div class="hero-buttons">
-                                <a href="#contact" class="btn btn-primary-custom">Get In Touch</a>
-                                <a href="#projects" class="btn btn-outline-custom">View Projects</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-5">
-                        <div class="hero-image-container">
-                            <div class="hero-image-wrapper">
-                                <img class="hero-image" src="docs/images/bg-2.jpg" alt="Shafiq Imtiaz" />
-                            </div>
-                            <div class="hero-decoration"></div>
-                        </div>
-                    </div>
-                </div>
+  <main class="min-h-screen pt-24">
+    <section class="flex flex-col items-start gap-12 px-6 py-20 lg:flex-row lg:px-12">
+      <div class="space-y-8 lg:w-1/2">
+        <div class="inline-block border-l-4 border-primary bg-surface-container-high px-3 py-1">
+          <span class="font-label text-xs uppercase tracking-widest text-primary">System Status: Shipping Cloud-Native Software</span>
+        </div>
+        <h1 class="font-headline text-5xl font-bold uppercase italic leading-none tracking-tight md:text-7xl">
+          Shafiq <span class="text-primary">Imtiaz</span><br />
+          Full-Stack Developer.
+        </h1>
+        <p class="max-w-xl text-lg leading-relaxed text-on-surface-variant">
+          Full-stack software developer and AWS Certified AI Practitioner focused on scalable backend systems, enterprise modernization, and AI-driven product delivery across Java, React, cloud, and microservice ecosystems.
+        </p>
+        <div class="flex flex-wrap gap-4 pt-4">
+          <a class="neon-glow-primary flex items-center gap-3 bg-primary px-8 py-4 font-label font-bold uppercase tracking-wider text-on-primary transition-all hover:brightness-110 active:scale-95" href="docs/Shafiq-Imtiaz-Resume.pdf" target="_blank" rel="noreferrer">
+            VIEW_RESUME
+            <span class="material-symbols-outlined text-sm">description</span>
+          </a>
+          <a class="flex items-center gap-3 border border-outline-variant px-8 py-4 font-label font-bold uppercase tracking-wider text-on-surface transition-all hover:bg-surface-container" href="contact.html">
+            OPEN_CONTACT
+            <span class="material-symbols-outlined text-sm">mail</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-1/2">
+        <div class="neon-glow-primary relative aspect-video w-full overflow-hidden border border-outline-variant/30 bg-surface-container-lowest">
+          <div class="crt-overlay absolute inset-0 z-10"></div>
+          <div class="flex items-center justify-between border-b border-outline-variant/20 bg-surface-container-highest px-4 py-2">
+            <div class="flex gap-2">
+              <div class="h-3 w-3 bg-error-dim"></div>
+              <div class="h-3 w-3 bg-tertiary-dim"></div>
+              <div class="h-3 w-3 bg-primary-dim"></div>
             </div>
+            <div class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant">SHAFIQ_PORTFOLIO_BASH</div>
+          </div>
+          <div class="space-y-4 p-6 font-label text-sm md:text-base">
+            <div class="flex gap-3">
+              <span class="text-primary">shafiq@portfolio:~$</span>
+              <span class="text-on-surface">whoami</span>
+            </div>
+            <div class="leading-relaxed text-on-surface-variant">
+              Software developer at Flexspring delivering cloud-native systems, modernization work, AI initiatives, and high-ownership execution across product, platform, and production support.
+            </div>
+
+            <div class="flex gap-3">
+              <span class="text-primary">shafiq@portfolio:~$</span>
+              <span class="text-on-surface">cat stack.matrix</span>
+            </div>
+            <div class="grid grid-cols-1 gap-2 text-secondary md:grid-cols-2">
+              <div>&gt; LANGUAGES: Java, JavaScript, TypeScript, SQL</div>
+              <div>&gt; FRONTEND: React, Bootstrap, HTML, CSS</div>
+              <div>&gt; BACKEND: Spring Boot, Quarkus, NodeJS</div>
+              <div>&gt; CLOUD: AWS S3, SQS, Docker, MongoDB, PostgreSQL</div>
+            </div>
+
+            <div class="flex gap-3">
+              <span class="text-primary">shafiq@portfolio:~$</span>
+              <span class="text-on-surface">tail -n 4 impact.log</span>
+            </div>
+            <div class="space-y-2 text-on-surface-variant">
+              <div>&gt; File Manager microservice scaled to 500+ concurrent requests.</div>
+              <div>&gt; Platform uptime improved to 99.97% across core products.</div>
+              <div>&gt; Monitor Pilot helped generate $200K+ in upsell revenue.</div>
+              <div>&gt; Test coverage raised to 85%+ across backend services.</div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span class="text-primary">shafiq@portfolio:~$</span>
+              <span class="text-on-surface">awaiting_next_build...</span>
+              <span class="h-5 w-2 bg-primary cursor-blink"></span>
+            </div>
+          </div>
         </div>
-        <div class="scroll-indicator">
-            <a href="#about"><i class="bi bi-chevron-down"></i></a>
-        </div>
+      </div>
     </section>
 
-    <!-- About Section -->
-    <section class="section-about" id="about">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">About Me</h2>
-                <div class="section-underline"></div>
-            </div>
-            <div class="row">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <div class="about-content">
-                        <p class="about-text">
-                            Full-stack software developer and <strong>AWS Certified AI Practitioner</strong> specializing in building scalable, cloud-native systems and modernizing enterprise architectures. Known for strong ownership, technical leadership, and mentorship.
-                        </p>
-                        <p class="about-text">
-                            Skilled in AI-driven solutions, process automation, and full lifecycle software delivery across backend and cloud ecosystems. Passionate about driving platform stability and creating impactful solutions.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="about-details">
-                        <div class="detail-item">
-                            <i class="bi bi-geo-alt-fill"></i>
-                            <span>Ottawa, ON, Canada</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="bi bi-envelope-fill"></i>
-                            <span>shafiqimtiaz@gmail.com</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="bi bi-phone-fill"></i>
-                            <span>+1 514-574-4436</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="bi bi-globe"></i>
-                            <span>shafiqimtiaz.github.io</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Education -->
-            <div class="education-section mt-5">
-                <h3 class="subsection-title"><i class="bi bi-mortarboard-fill"></i> Education</h3>
-                <div class="row g-4 justify-content-center">
-                    <div class="col-md-6">
-                        <div class="education-card">
-                            <div class="education-icon">
-                                <i class="bi bi-mortarboard"></i>
-                            </div>
-                            <h5>M.Eng. Software Engineering (Co-op)</h5>
-                            <p class="institution">Concordia University</p>
-                            <p class="duration">Sep 2022 – Apr 2024</p>
-                            <p class="gpa">GPA: 3.77 / 4.30</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <section class="space-y-12 px-6 py-20 lg:px-12">
+      <div class="flex items-end justify-between border-b border-outline-variant/10 pb-6">
+        <div>
+          <h2 class="font-headline text-3xl font-bold uppercase tracking-tight">Deployment_History</h2>
+          <p class="mt-2 font-label text-xs uppercase tracking-widest text-on-surface-variant">Selected impact from Flexspring and academic leadership</p>
         </div>
+        <a class="font-label text-xs uppercase tracking-widest text-secondary hover:underline" href="projects.html">View_All_Logs</a>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div class="group relative overflow-hidden bg-surface-container md:col-span-2">
+          <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+          <div class="relative p-8">
+            <span class="bg-primary/10 px-2 py-1 font-label text-[10px] tracking-widest text-primary">MICROSERVICE_DELIVERY</span>
+            <h3 class="mt-4 font-headline text-2xl font-bold uppercase transition-colors group-hover:text-primary">Flexspring_File_Manager</h3>
+            <p class="mt-2 max-w-2xl text-sm text-on-surface-variant">
+              Designed and launched a Quarkus-based file management microservice using AWS S3, AWS SQS, and MongoDB. Reduced file-processing latency by 40% while handling 500+ concurrent requests.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-4">
+              <span class="font-label text-[10px] uppercase tracking-tighter text-outline">#QUARKUS</span>
+              <span class="font-label text-[10px] uppercase tracking-tighter text-outline">#AWS_S3</span>
+              <span class="font-label text-[10px] uppercase tracking-tighter text-outline">#AWS_SQS</span>
+              <span class="font-label text-[10px] uppercase tracking-tighter text-outline">#MONGODB</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex aspect-square flex-col justify-between border-l-4 border-secondary/30 bg-surface-container p-8 transition-all hover:border-secondary">
+          <span class="material-symbols-outlined text-4xl text-secondary">smart_toy</span>
+          <div>
+            <span class="font-label text-[10px] uppercase tracking-widest text-secondary">AI_INITIATIVE</span>
+            <h3 class="mt-2 font-headline text-xl font-bold uppercase transition-colors hover:text-secondary">RAG_Chatbot_Prototype</h3>
+            <p class="mt-2 text-xs text-on-surface-variant">
+              Runner-up hackathon project built with Crewdle AI and retrieval-augmented generation, then evolved into a broader AI initiative for future product features.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex aspect-square flex-col justify-between border-l-4 border-tertiary/30 bg-surface-container p-8 transition-all hover:border-tertiary">
+          <span class="material-symbols-outlined text-4xl text-tertiary">upgrade</span>
+          <div>
+            <span class="font-label text-[10px] uppercase tracking-widest text-tertiary">MODERNIZATION</span>
+            <h3 class="mt-2 font-headline text-xl font-bold uppercase transition-colors hover:text-tertiary">Java17_SpringBoot3</h3>
+            <p class="mt-2 text-xs text-on-surface-variant">
+              Modernized backend services from Java 8 to 17 and Spring Boot 2 to 3, improving CI/CD efficiency by 35% and reducing production incidents by 60%.
+            </p>
+          </div>
+        </div>
+
+        <div class="group flex flex-col bg-surface-container md:col-span-2 md:flex-row">
+          <div class="flex items-center justify-center bg-surface-container-high p-8 md:w-1/2">
+            <div class="w-full border border-outline-variant/20 bg-surface-container-lowest p-6">
+              <div class="mb-4 flex items-center justify-between font-label text-[10px] uppercase tracking-widest text-on-surface-variant">
+                <span>MONITOR_PILOT</span>
+                <span class="text-secondary">DEPLOYED</span>
+              </div>
+              <div class="space-y-3 font-label text-sm text-secondary">
+                <div>&gt; React + TypeScript onboarding dashboard</div>
+                <div>&gt; Onboarding accelerated by 50%</div>
+                <div>&gt; Generated $200K+ in upsell revenue</div>
+                <div>&gt; Modernized UI with Bootstrap 5</div>
+              </div>
+            </div>
+          </div>
+          <div class="p-8 md:w-1/2">
+            <span class="font-label text-[10px] uppercase tracking-widest text-secondary-fixed-dim">PRODUCT_ENABLEMENT</span>
+            <h3 class="mt-4 font-headline text-2xl font-bold uppercase transition-colors group-hover:text-secondary">Monitor_Pilot</h3>
+            <p class="mt-2 text-sm leading-relaxed text-on-surface-variant">
+              Built and deployed a customer-facing dashboard that accelerated onboarding, improved UX performance, and directly supported new revenue through better visibility and product adoption.
+            </p>
+            <div class="mt-6 flex gap-4">
+              <span class="font-label text-[10px] uppercase tracking-tighter text-outline">#REACT</span>
+              <span class="font-label text-[10px] uppercase tracking-tighter text-outline">#TYPESCRIPT</span>
+              <span class="font-label text-[10px] uppercase tracking-tighter text-outline">#BOOTSTRAP5</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- Certifications Section -->
-    <section class="section-certifications" id="certifications">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Licenses & Certifications</h2>
-                <div class="section-underline"></div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="certification-card">
-                        <div class="certification-header">
-                            <div class="certification-icon">
-                                <i class="bi bi-award-fill"></i>
-                            </div>
-                            <div class="certification-content">
-                                <strong>AWS Certified AI Practitioner</strong>
-                                <span>Amazon Web Services (AWS)</span>
-                                <span>Issued Nov 2025 · Expires Nov 2028</span>
-                                <span>Credential ID: f33dbc99-4952-4c46-ab20-0e303d253724</span>
-                                <a class="certification-link"
-                                    href="https://www.credly.com/badges/f33dbc99-4952-4c46-ab20-0e303d253724/linked_in_profile"
-                                    target="_blank" rel="noopener noreferrer">
-                                    View credential on Credly
-                                    <i class="bi bi-box-arrow-up-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <section class="bg-surface-container-low px-6 py-20 lg:px-12">
+      <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
+        <div class="space-y-1">
+          <div class="font-headline text-4xl font-bold text-primary">500+</div>
+          <div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Concurrent_Requests</div>
         </div>
+        <div class="space-y-1">
+          <div class="font-headline text-4xl font-bold text-secondary">99.97%</div>
+          <div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Platform_Uptime</div>
+        </div>
+        <div class="space-y-1">
+          <div class="font-headline text-4xl font-bold text-tertiary">$200K+</div>
+          <div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Upsell_Revenue_Influenced</div>
+        </div>
+        <div class="space-y-1">
+          <div class="font-headline text-4xl font-bold text-primary-dim">85%+</div>
+          <div class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">JUnit_Coverage</div>
+        </div>
+      </div>
     </section>
+  </main>
 
-    <!-- Experience Section -->
-    <section class="section-experience" id="experience">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Experience</h2>
-                <div class="section-underline"></div>
-            </div>
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <h4>Software Developer</h4>
-                            <span class="timeline-company">Flexspring, Montreal, QC (Remote)</span>
-                        </div>
-                        <span class="timeline-date">May 2024 – Present</span>
-                        <span class="timeline-type">Full-time Permanent</span>
-                        <ul class="timeline-details">
-                            <li>Designed and launched Flexspring File Manager microservice (Quarkus, AWS S3/SQS, MongoDB), reducing file-processing latency by 40% and scaling to 500+ concurrent requests</li>
-                            <li>Modernized backend systems (Java 8 to 17, Spring Boot 2 to 3), improving CI/CD pipeline efficiency by 35% and reducing production incidents by 60%</li>
-                            <li>Drove platform stability and uptime (99.97%) for core products through proactive debugging and code quality initiatives</li>
-                            <li>Awarded Runner-Up at Flexspring Hackathon for an AI chatbot built using Crewdle AI and RAG with company data; earned $1,000 team prize</li>
-                            <li>Acted as technical mentor, conducting code reviews and guiding interns on testing and development best practices</li>
-                        </ul>
-                        <div class="timeline-tags">
-                            <span class="tag">Java</span>
-                            <span class="tag">Quarkus</span>
-                            <span class="tag">Spring Boot</span>
-                            <span class="tag">AWS</span>
-                            <span class="tag">MongoDB</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-header">
-                            <h4>Software Developer Intern</h4>
-                            <span class="timeline-company">Flexspring, Montreal, QC (Remote)</span>
-                        </div>
-                        <span class="timeline-date">May 2023 – Apr 2024</span>
-                        <ul class="timeline-details">
-                            <li>Built and deployed Monitor Pilot, a React + TypeScript dashboard that accelerated onboarding by 50% and improved customer satisfaction</li>
-                            <li>Refactored 15+ legacy APIs to RESTful standards, increasing integration performance by 80% and reducing authentication errors by 45%</li>
-                            <li>Migrated backend services (Java 17, Spring Boot 3), enabling real-time data streaming and cutting response times by 70%</li>
-                            <li>Raised JUnit coverage to 85%+, improved API documentation via Swagger-UI (OpenAPI 3)</li>
-                            <li>Modernized front-end by migrating legacy UI to Bootstrap 5, improving load performance by 65%</li>
-                        </ul>
-                        <div class="timeline-tags">
-                            <span class="tag">React</span>
-                            <span class="tag">TypeScript</span>
-                            <span class="tag">Java</span>
-                            <span class="tag">Spring Boot</span>
-                            <span class="tag">REST API</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Volunteer Section -->
-    <section class="section-volunteer" id="volunteer">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Leadership</h2>
-                <div class="section-underline"></div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="volunteer-card">
-                        <div class="volunteer-icon">
-                            <i class="bi bi-trophy-fill"></i>
-                        </div>
-                        <div class="volunteer-content">
-                            <h4>Director of Sponsorship</h4>
-                            <p class="volunteer-org">HackConcordia, Montreal, QC</p>
-                            <p class="volunteer-date">Oct 2022 – Apr 2023</p>
-                            <p class="volunteer-description">Organized and managed ConUHacks VII, largest Hackathon in Quebec with 800+ participants from 97 universities.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Skills Section -->
-    <section class="section-skills" id="skills">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Skills & Technologies</h2>
-                <div class="section-underline"></div>
-            </div>
-            <div class="row g-4">
-                <!-- Languages -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="skill-category">
-                        <h4><i class="bi bi-code-slash"></i> Languages</h4>
-                        <div class="skill-items">
-                            <div class="skill-item">Java</div>
-                            <div class="skill-item">JavaScript</div>
-                            <div class="skill-item">TypeScript</div>
-                            <div class="skill-item">SQL</div>
-                            <div class="skill-item">HTML</div>
-                            <div class="skill-item">CSS</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Frameworks -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="skill-category">
-                        <h4><i class="bi bi-layers"></i> Frameworks</h4>
-                        <div class="skill-items">
-                            <div class="skill-item">Spring Boot</div>
-                            <div class="skill-item">Quarkus</div>
-                            <div class="skill-item">React</div>
-                            <div class="skill-item">Node.js</div>
-                            <div class="skill-item">Bootstrap</div>
-                            <div class="skill-item">JUnit</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Databases & Cloud -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="skill-category">
-                        <h4><i class="bi bi-cloud"></i> Databases & Cloud</h4>
-                        <div class="skill-items">
-                            <div class="skill-item">PostgreSQL</div>
-                            <div class="skill-item">MongoDB</div>
-                            <div class="skill-item">AWS (S3, SQS)</div>
-                            <div class="skill-item">Docker</div>
-                            <div class="skill-item">Redis</div>
-                        </div>
-                    </div>
-                </div>
-                <!-- DevOps & Tools -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="skill-category">
-                        <h4><i class="bi bi-tools"></i> DevOps & Tools</h4>
-                        <div class="skill-items">
-                            <div class="skill-item">Jenkins</div>
-                            <div class="skill-item">Git</div>
-                            <div class="skill-item">GitHub</div>
-                            <div class="skill-item">Postman</div>
-                            <div class="skill-item">Sentry</div>
-                            <div class="skill-item">Kibana</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Practices -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="skill-category practices">
-                        <h4><i class="bi bi-gear"></i> Practices & Methodologies</h4>
-                        <div class="skill-items">
-                            <div class="skill-item">Agile</div>
-                            <div class="skill-item">Scrum</div>
-                            <div class="skill-item">CI/CD</div>
-                            <div class="skill-item">Microservices</div>
-                            <div class="skill-item">Unit Testing</div>
-                            <div class="skill-item">Debugging</div>
-                            <div class="skill-item">Version Control</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="section-projects" id="projects">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Featured Projects</h2>
-                <div class="section-underline"></div>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-icon">
-                            <i class="bi bi-file-earmark-code"></i>
-                        </div>
-                        <h5>Flexspring File Manager</h5>
-                        <p class="project-description">Microservice for file processing using Quarkus, AWS S3/SQS, and MongoDB. Reduced latency by 40% and scaled to 500+ concurrent requests.</p>
-                        <div class="project-tags">
-                            <span>Quarkus</span>
-                            <span>AWS S3/SQS</span>
-                            <span>MongoDB</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="#" class="btn-project disabled"><i class="bi bi-lock"></i> Private</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-icon">
-                            <i class="bi bi-robot"></i>
-                        </div>
-                        <h5>AI Chatbot (Hackathon)</h5>
-                        <p class="project-description">Runner-up at Flexspring Hackathon. Built using Crewdle AI and RAG with company data, laying the foundation for future AI-powered product features.</p>
-                        <div class="project-tags">
-                            <span>AI</span>
-                            <span>RAG</span>
-                            <span>Crewdle AI</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="#" class="btn-project disabled"><i class="bi bi-lock"></i> Private</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-icon">
-                            <i class="bi bi-speedometer2"></i>
-                        </div>
-                        <h5>Monitor Pilot</h5>
-                        <p class="project-description">React + TypeScript dashboard that accelerated onboarding by 50% and improved customer satisfaction for Flexspring platform.</p>
-                        <div class="project-tags">
-                            <span>React</span>
-                            <span>TypeScript</span>
-                            <span>Dashboard</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="#" class="btn-project disabled"><i class="bi bi-lock"></i> Private</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-icon">
-                            <i class="bi bi-box-seam"></i>
-                        </div>
-                        <h5>BSRM Warehouse</h5>
-                        <p class="project-description">Full-Stack MERN Inventory Management web application for warehouse operations.</p>
-                        <div class="project-tags">
-                            <span>MERN</span>
-                            <span>MongoDB</span>
-                            <span>React</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://mern-inventory-management.netlify.app/" target="_blank" class="btn-project"><i class="bi bi-box-arrow-up-right"></i> Live</a>
-                            <a href="https://github.com/shafiqimtiaz/bsrm-warehouse-management" target="_blank" class="btn-project"><i class="bi bi-github"></i> Code</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-icon">
-                            <i class="bi bi-cart3"></i>
-                        </div>
-                        <h5>BSRM Trading</h5>
-                        <p class="project-description">Full-Stack MERN E-commerce web application with complete shopping functionality.</p>
-                        <div class="project-tags">
-                            <span>MERN</span>
-                            <span>E-commerce</span>
-                            <span>React</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://mern-ecom-app.netlify.app/" target="_blank" class="btn-project"><i class="bi bi-box-arrow-up-right"></i> Live</a>
-                            <a href="https://github.com/shafiqimtiaz/bsrm-trading-ecommerce/" target="_blank" class="btn-project"><i class="bi bi-github"></i> Code</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="project-icon">
-                            <i class="bi bi-cube"></i>
-                        </div>
-                        <h5>Birdhaus</h5>
-                        <p class="project-description">Minecraft mod adding craftable birdhouse blocks. <span class="project-course">[COMP 5541]</span></p>
-                        <div class="project-tags">
-                            <span>Java</span>
-                            <span>Minecraft</span>
-                            <span>Modding</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://www.curseforge.com/minecraft/mc-mods/birdhaus" target="_blank" class="btn-project"><i class="bi bi-box-arrow-up-right"></i> View</a>
-                            <a href="https://github.com/shafiqimtiaz/birdhaus" target="_blank" class="btn-project"><i class="bi bi-github"></i> Code</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="section-contact" id="contact">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Get In Touch</h2>
-                <div class="section-underline"></div>
-                <p class="section-subtitle">Feel free to reach out for collaborations or opportunities</p>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-10">
-                    <div class="contact-cards">
-                        <a href="mailto:shafiqimtiaz@gmail.com" class="contact-card">
-                            <i class="bi bi-envelope-fill"></i>
-                            <span>Email</span>
-                            <small>shafiqimtiaz@gmail.com</small>
-                        </a>
-                        <a href="tel:+15145744436" class="contact-card">
-                            <i class="bi bi-telephone-fill"></i>
-                            <span>Phone</span>
-                            <small>+1 514-574-4436</small>
-                        </a>
-                        <a href="https://www.linkedin.com/in/shafiqimtiaz/" target="_blank" class="contact-card">
-                            <i class="bi bi-linkedin"></i>
-                            <span>LinkedIn</span>
-                            <small>Connect</small>
-                        </a>
-                        <a href="https://github.com/shafiqimtiaz" target="_blank" class="contact-card">
-                            <i class="bi bi-github"></i>
-                            <span>GitHub</span>
-                            <small>View Code</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="footer-text">&copy; 2024 Shafiq Imtiaz. All rights reserved.</p>
-                </div>
-                <div class="col-md-6">
-                    <div class="footer-links">
-                        <a href="https://github.com/shafiqimtiaz" target="_blank"><i class="bi bi-github"></i></a>
-                        <a href="https://www.linkedin.com/in/shafiqimtiaz/" target="_blank"><i class="bi bi-linkedin"></i></a>
-                        <a href="mailto:shafiqimtiaz@gmail.com"><i class="bi bi-envelope-fill"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
-        integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
-        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous">
-    </script>
-    <script>
-        (function () {
-            var root = document.documentElement;
-            var toggleButton = document.getElementById("themeToggle");
-            var toggleIcon = document.getElementById("themeToggleIcon");
-            var toggleLabel = document.getElementById("themeToggleLabel");
-
-            function applyTheme(theme) {
-                root.setAttribute("data-theme", theme);
-                localStorage.setItem("theme", theme);
-
-                if (toggleIcon) {
-                    toggleIcon.className = theme === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
-                }
-
-                if (toggleLabel) {
-                    toggleLabel.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
-                }
-            }
-
-            applyTheme(root.getAttribute("data-theme") || "dark");
-
-            if (toggleButton) {
-                toggleButton.addEventListener("click", function () {
-                    var nextTheme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-                    applyTheme(nextTheme);
-                });
-            }
-        })();
-    </script>
+  <footer class="mt-24 flex w-full flex-col items-center justify-between gap-4 bg-surface-container-low px-6 pb-12 pt-8 md:flex-row lg:px-12">
+    <div class="font-headline font-bold text-primary">SHAFIQ_IMTIAZ.SYS</div>
+    <div class="font-space-grotesk text-[10px] uppercase tracking-widest text-outline-variant">©2026_SHAFIQ_IMTIAZ // BUILD_ACTIVE</div>
+    <div class="flex gap-8">
+      <a class="font-space-grotesk text-[10px] uppercase tracking-widest text-outline-variant transition-colors hover:text-tertiary" href="https://github.com/shafiqimtiaz" target="_blank" rel="noreferrer">GITHUB</a>
+      <a class="font-space-grotesk text-[10px] uppercase tracking-widest text-outline-variant transition-colors hover:text-tertiary" href="https://linkedin.com/in/shafiqimtiaz" target="_blank" rel="noreferrer">LINKEDIN</a>
+      <a class="font-space-grotesk text-[10px] uppercase tracking-widest text-outline-variant transition-colors hover:text-tertiary" href="docs/Shafiq-Imtiaz-Resume.pdf" target="_blank" rel="noreferrer">RESUME</a>
+    </div>
+  </footer>
 </body>
-
 </html>
