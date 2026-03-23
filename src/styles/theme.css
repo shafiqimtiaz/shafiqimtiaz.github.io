@@ -1,0 +1,53 @@
+:root {
+  color-scheme: dark;
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-body: 'Cascadia Code', 'Fira Code', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo,
+    monospace;
+  --theme-bg: #0e0e0e;
+  --theme-surface-lowest: #000000;
+  --theme-surface-low: #131313;
+  --theme-surface: #1a1919;
+  --theme-surface-high: #201f1f;
+  --theme-surface-highest: #262626;
+  --theme-text: #ffffff;
+  --theme-text-muted: #adaaaa;
+  --theme-outline: #777575;
+  --theme-outline-variant: #494847;
+  --theme-primary: #9cff93;
+  --theme-primary-dim: #00ec3b;
+  --theme-secondary: #00e3fd;
+  --theme-tertiary: #ffc563;
+  --theme-error-dim: #d53d18;
+  --theme-tertiary-dim: #eda600;
+  --theme-on-primary: #04190a;
+  --shadow-primary: 0 0 24px rgba(156, 255, 147, 0.12);
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.3);
+  --container-width: 1180px;
+  --header-height: 88px;
+  --page-top-spacing: 2.5rem;
+  --transition-fast: 180ms ease;
+  --transition-base: 280ms ease;
+}
+
+html.theme-light {
+  color-scheme: light;
+  --theme-bg: #f4f7fa;
+  --theme-surface-lowest: #ffffff;
+  --theme-surface-low: #edf2f7;
+  --theme-surface: #e3ebf3;
+  --theme-surface-high: #d8e2ec;
+  --theme-surface-highest: #cfdbe7;
+  --theme-text: #0f172a;
+  --theme-text-muted: #334155;
+  --theme-outline: #94a3b8;
+  --theme-outline-variant: #64748b;
+  --theme-primary: #0e9f3e;
+  --theme-primary-dim: #22c55e;
+  --theme-secondary: #0284c7;
+  --theme-tertiary: #b45309;
+  --theme-error-dim: #dc2626;
+  --theme-tertiary-dim: #d97706;
+  --theme-on-primary: #04190a;
+  --shadow-primary: 0 0 24px rgba(14, 159, 62, 0.14);
+  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
