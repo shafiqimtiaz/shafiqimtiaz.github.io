@@ -4,15 +4,15 @@ export default {
       fontFamily: {
         headline: ['Space Grotesk', 'sans-serif'],
         body: [
-          'Cascadia Code',
+          'Caskaydia Code',
           'Fira Code',
           'SFMono-Regular',
           'Consolas',
           'Liberation Mono',
           'Menlo',
-          'monospace'
-        ]
-      }
-    }
-  }
+          'monospace',
+        ],
+      },
+    },
+  },
 };

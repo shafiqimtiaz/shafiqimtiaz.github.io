@@ -1,0 +1,8 @@
+# Ignore artifacts and static files
+node_modules/
+dist/
+build/
+public/
+.env*
+.DS_Store
+package-lock.json

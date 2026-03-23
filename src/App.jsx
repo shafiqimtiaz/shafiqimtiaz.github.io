@@ -7,7 +7,6 @@ import Contact from './pages/Contact';
 import Home from './pages/Home';
 import Projects from './pages/Projects';
 
-// Router shell that keeps the shared navigation and footer around every page.
 export default function App() {
   const location = useLocation();
 
