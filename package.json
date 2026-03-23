@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run format && npm run lint && vite build",
-    "vercel-build": "npm run format && npm run lint && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "format": "prettier --write .",
     "lint": "echo \"No lint configured\""
