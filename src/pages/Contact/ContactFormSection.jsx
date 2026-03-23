@@ -15,14 +15,55 @@ export default function ContactFormSection() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const CONTACT_FORM_RECIPIENT = import.meta.env.VITE_CONTACT_FORM_RECIPIENT || 'shafiqimtiaz@gmail.com';
+  const CONTACT_FORM_ENDPOINT = import.meta.env.VITE_CONTACT_FORM_ENDPOINT || '';
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setStatus('sending');
 
-    setTimeout(() => {
+    const payload = contactFormFields.reduce((acc, field) => {
+      const value = (formData[field.name] || '').toString().trim();
+      return { ...acc, [field.name]: value };
+    }, {});
+
+    if (!payload.name || !payload.email || !payload.message) {
+      setStatus('error');
+      return;
+    }
+
+    try {
+      if (CONTACT_FORM_ENDPOINT) {
+        const res = await fetch(CONTACT_FORM_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...payload,
+            recipient: CONTACT_FORM_RECIPIENT,
+          }),
+        });
+
+        if (!res.ok) {
+          throw new Error(`Contact endpoint failed with status ${res.status}`);
+        }
+
+        setStatus('sent');
+        setFormData(initialFormData);
+        return;
+      }
+
+      const subject = `New contact form message from ${payload.name}`;
+      const body = `Name: ${payload.name}%0D%0AEmail: ${payload.email}%0D%0AMessage:%0D%0A${payload.message}`;
+      window.location.href = `mailto:${encodeURIComponent(CONTACT_FORM_RECIPIENT)}?subject=${encodeURIComponent(subject)}&body=${body}`;
+
       setStatus('sent');
       setFormData(initialFormData);
-    }, 600);
+    } catch (error) {
+      console.error('Contact form submit error', error);
+      setStatus('error');
+    }
   };
 
   return (
@@ -88,13 +129,21 @@ export default function ContactFormSection() {
                 ? 'IN_PROCESS...'
                 : status === 'sent'
                   ? 'SEND_COMPLETE'
-                  : 'EXECUTE_SEND'}
+                  : status === 'error'
+                    ? 'RETRY_SEND'
+                    : 'EXECUTE_SEND'}
             </Button>
           </div>
 
           {status === 'sent' && (
             <p className="text-sm text-[var(--theme-secondary)]">
               Message sent successfully. I’ll respond in 24h or less.
+            </p>
+          )}
+
+          {status === 'error' && (
+            <p className="text-sm text-[var(--theme-error)]">
+              Failed to send message. Please check your internet connection and try again.
             </p>
           )}
         </form>
