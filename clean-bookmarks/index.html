@@ -252,30 +252,31 @@ p { font-weight: 500; }
 .statement .sub strong { font-weight: 800; }
 
 /* ===========================================
-   SLIDE 3 — FEATURE GRID
+   SLIDE 3 — FEATURE GRID (4x2 — 8 features)
    =========================================== */
-.head-row { display: flex; align-items: center; gap: 28px; margin-bottom: 56px; }
-.head-row h2 { font-size: 100px; }
+.head-row { display: flex; align-items: center; gap: 28px; margin-bottom: 40px; }
+.head-row h2 { font-size: 88px; }
 
 .feat-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 36px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
 }
 .feat {
     background: var(--surface);
     border: var(--border);
     box-shadow: var(--shadow-sm);
-    padding: 38px 42px;
-    display: flex; gap: 28px; align-items: flex-start;
+    padding: 24px 24px;
+    display: flex; gap: 18px; align-items: flex-start;
+    min-height: 280px;
 }
 .feat .num {
     font-family: var(--font-mono);
-    font-size: 40px; font-weight: 700;
+    font-size: 26px; font-weight: 700;
     line-height: 1;
     color: var(--surface);
     background: var(--ink);
-    width: 72px; height: 72px;
+    width: 48px; height: 48px;
     display: flex; align-items: center; justify-content: center;
     border: var(--border);
     flex-shrink: 0;
@@ -284,8 +285,12 @@ p { font-weight: 500; }
 .feat:nth-child(2) .num { background: var(--secondary); color: var(--ink); }
 .feat:nth-child(3) .num { background: var(--ink); }
 .feat:nth-child(4) .num { background: var(--primary); }
-.feat h3 { font-size: 46px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
-.feat p { font-size: 27px; font-weight: 500; line-height: 1.2; color: #3a3f49; }
+.feat:nth-child(5) .num { background: var(--secondary); color: var(--ink); }
+.feat:nth-child(6) .num { background: var(--ink); }
+.feat:nth-child(7) .num { background: var(--primary); }
+.feat:nth-child(8) .num { background: var(--secondary); color: var(--ink); }
+.feat h3 { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+.feat p { font-size: 20px; font-weight: 500; line-height: 1.18; color: #3a3f49; }
 
 /* ===========================================
    SLIDE 4 — HOW IT WORKS (architecture)
@@ -394,7 +399,7 @@ p { font-weight: 500; }
     color: var(--primary); margin-bottom: 8px;
 }
 .pcard .pd { font-size: 30px; font-weight: 600; line-height: 1.12; }
-.pcard:nth-child(2) .pt { color: var(--secondary); }
+.pcard:nth-child(even) .pt { color: var(--secondary); }
 
 /* ===========================================
    SLIDE 7 — GET STARTED
@@ -425,7 +430,26 @@ p { font-weight: 500; }
     background: var(--paper); padding: 2px 8px; font-size: 26px;
     border: 2px solid var(--ink);
 }
-.gs-right { flex: 0.85; }
+.gs-right { flex: 0.85; display: flex; flex-direction: column; gap: 22px; }
+.gs-callout {
+    background: var(--secondary);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 22px 26px;
+    font-size: 22px; font-weight: 600; line-height: 1.2;
+    display: flex; align-items: center; gap: 16px;
+}
+.gs-callout .mk {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--ink); color: var(--surface);
+    padding: 6px 12px; font-size: 17px; flex-shrink: 0;
+    letter-spacing: 0.06em;
+}
+.gs-callout code {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--paper); padding: 1px 6px; font-size: 18px;
+    border: 2px solid var(--ink);
+}
 .terminal {
     background: var(--ink);
     border: var(--border);
@@ -566,8 +590,8 @@ p { font-weight: 500; }
     <!-- === SLIDE 2: OVERVIEW STATEMENT === -->
     <section class="slide statement">
         <span class="kicker coral reveal d1">The Problem</span>
-        <h1 class="big reveal d2">Your bookmark <em>junk drawer</em>,<br>turned into a <span class="gold">clean tree</span>.</h1>
-        <p class="sub reveal d3">Clean Bookmarks scans the loose items in <strong>Other Bookmarks</strong> and your <strong>Bookmarks Bar</strong>, asks an AI to propose a category structure, lets you tune it, then sorts everything into place. One click and it's all back the way it was.</p>
+        <h1 class="big reveal d2">Bookmarks piled into <em>Other Bookmarks</em>,<br>sorted into a <span class="gold">clean tree</span>.</h1>
+        <p class="sub reveal d3">Clean Bookmarks scans the bookmarks piled into <strong>Other Bookmarks</strong> and the loose items on the <strong>Bookmarks Bar</strong>, asks an AI to propose a category structure, lets you tune it, then sorts everything into place. One click and it's all back the way it was.</p>
         <div class="slug">Overview</div>
         <div class="pageno">02</div>
     </section>
@@ -583,28 +607,56 @@ p { font-weight: 500; }
                 <div class="num">01</div>
                 <div>
                     <h3>Two-pass AI</h3>
-                    <p>First proposes a taxonomy of 8–15 categories, then assigns every bookmark to it. Consistent across thousands.</p>
+                    <p>First pass proposes 8–12 top-level categories. Second pass assigns every bookmark. Sub-categories only when 10+ share a clear theme.</p>
                 </div>
             </div>
-            <div class="feat reveal d3">
+            <div class="feat reveal d2">
                 <div class="num">02</div>
                 <div>
                     <h3>You stay in control</h3>
-                    <p>Review the proposed categories. Rename, remove, or add before anything moves.</p>
+                    <p>Review the proposed categories in the UI. Rename, remove, or add before anything moves.</p>
+                </div>
+            </div>
+            <div class="feat reveal d3">
+                <div class="num">03</div>
+                <div>
+                    <h3>Your prompt, your categories</h3>
+                    <p>The taxonomy prompt is editable in Settings. Bias the structure toward your work or hobbies. Reset with one click.</p>
+                </div>
+            </div>
+            <div class="feat reveal d3">
+                <div class="num">04</div>
+                <div>
+                    <h3>Non-destructive</h3>
+                    <p>Bookmarks Bar and Other Bookmarks roots are never moved. Named folders are flattened; "exclude" ones are left alone.</p>
                 </div>
             </div>
             <div class="feat reveal d4">
-                <div class="num">03</div>
+                <div class="num">05</div>
                 <div>
-                    <h3>Non-destructive</h3>
-                    <p>Named folders are never touched. Results land in a dated 📁 Organized — YYYY-MM-DD folder.</p>
+                    <h3>One-click undo</h3>
+                    <p>The current layout is snapshotted before any change. A single click restores it.</p>
+                </div>
+            </div>
+            <div class="feat reveal d4">
+                <div class="num">06</div>
+                <div>
+                    <h3>Bring your own key</h3>
+                    <p>API key stored in chrome.storage.local. Never synced. No install-time host permissions.</p>
                 </div>
             </div>
             <div class="feat reveal d5">
-                <div class="num">04</div>
+                <div class="num">07</div>
                 <div>
-                    <h3>One-click undo</h3>
-                    <p>The layout is snapshotted before any change. A single click restores it.</p>
+                    <h3>Cost transparency</h3>
+                    <p>See the estimated API calls, tokens, and cost before you spend a cent.</p>
+                </div>
+            </div>
+            <div class="feat reveal d5">
+                <div class="num">08</div>
+                <div>
+                    <h3>Resilient</h3>
+                    <p>Batched with bounded concurrency, automatic retries, and a safe Unsorted fallback.</p>
                 </div>
             </div>
         </div>
@@ -661,7 +713,7 @@ p { font-weight: 500; }
             <div class="step reveal d2">
                 <div class="sn">01</div>
                 <h3>Read scope</h3>
-                <p>Collect the junk drawer. Named folders left alone.</p>
+                <p>Collect everything in Other Bookmarks and loose items on the Bookmarks Bar.</p>
             </div>
             <div class="step reveal d2">
                 <div class="sn">02</div>
@@ -681,22 +733,17 @@ p { font-weight: 500; }
             <div class="step reveal d4">
                 <div class="sn">05</div>
                 <h3>Assign</h3>
-                <p>Parallel batches by numeric index, validated against a Zod schema.</p>
+                <p>Every bookmark matched by numeric index, validated against a Zod schema.</p>
             </div>
             <div class="step reveal d4">
                 <div class="sn">06</div>
                 <h3>Apply</h3>
-                <p>Snapshot taken, then bookmarks move into the dated folder.</p>
+                <p>Snapshot taken, then category folders created and bookmarks moved into place.</p>
             </div>
             <div class="step accent reveal d5">
                 <div class="sn">07</div>
                 <h3>Undo</h3>
                 <p>Restore the snapshot at any time.</p>
-            </div>
-            <div class="step gold reveal d5">
-                <div class="sn">★</div>
-                <h3>Resilient</h3>
-                <p>Bounded concurrency, retries, safe Unsorted fallback.</p>
             </div>
         </div>
         <div class="slug">Pipeline</div>
@@ -720,6 +767,10 @@ p { font-weight: 500; }
                 <div class="pd">Only titles and URLs leave. Nothing else.</div>
             </div>
             <div class="pcard reveal d5">
+                <div class="pt">Explicit consent</div>
+                <div class="pd">First-run screen states exactly what is sent and where, before any run.</div>
+            </div>
+            <div class="pcard reveal d6">
                 <div class="pt">Scoped permissions</div>
                 <div class="pd">No install-time host access. Granted per-origin on first use.</div>
             </div>
@@ -746,6 +797,10 @@ p { font-weight: 500; }
                     <div class="gn">3</div>
                     <p>Load unpacked → pick <code>dist/</code></p>
                 </div>
+                <div class="gstep reveal-l d6">
+                    <div class="gn">4</div>
+                    <p>Toolbar → <strong>Settings</strong>: provider, base URL, key, model</p>
+                </div>
             </div>
         </div>
         <div class="gs-right">
@@ -761,6 +816,10 @@ p { font-weight: 500; }
                     <div><span class="p">$</span> <span class="cmd">npm run build</span></div>
                     <div><span class="ok">✓ bundled to dist/</span></div>
                 </div>
+            </div>
+            <div class="gs-callout reveal d6">
+                <span class="mk">27 PROVIDERS</span>
+                <span>OpenAI, Anthropic, Google, Mistral, DeepSeek, Groq, xAI, OpenRouter, Ollama, LM Studio, … + <code>Custom</code> for any OpenAI-compatible endpoint.</span>
             </div>
         </div>
         <div class="slug">Get started</div>
@@ -812,7 +871,7 @@ p { font-weight: 500; }
     <!-- === SLIDE 9: CLOSING === -->
     <section class="slide closing">
         <img class="reveal d1" src="logo.png" alt="Clean Bookmarks logo">
-        <h2 class="reveal d2">Clean your drawer.</h2>
+        <h2 class="reveal d2">Clean your bookmarks.</h2>
         <p class="tagline reveal d3">Local-first · Bring-your-own-key · One-click undo</p>
         <a class="repo reveal d4" href="https://github.com/shafiqimtiaz/clean-bookmarks" target="_blank" rel="noopener">github.com/shafiqimtiaz/clean-bookmarks ↗</a>
         <div class="pageno">09</div>
