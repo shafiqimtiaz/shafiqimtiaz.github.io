@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clean Bookmarks — AI-powered bookmark organizer</title>
+<link rel="icon" href="icon.png">
+
+<!-- Fonts: Darker Grotesque (display/body) + JetBrains Mono (labels) — per DESIGN.md Brutalism -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   CSS CUSTOM PROPERTIES (THEME)
+   Brutalism palette + type from clean-bookmarks DESIGN.md
+   =========================================== */
+:root {
+    /* Colors */
+    --primary:   #DD614C;   /* terracotta */
+    --secondary: #DAA144;   /* gold */
+    --success:   #16A34A;
+    --danger:    #DC2626;
+    --ink:       #141821;   /* near-black navy (logo ribbon) */
+    --paper:     #F4EEE3;   /* warm concrete background */
+    --surface:   #FFFFFF;   /* card white */
+
+    /* Typography */
+    --font-display: 'Darker Grotesque', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    /* Brutalist signature */
+    --border:  4px solid var(--ink);
+    --shadow:  10px 10px 0 var(--ink);
+    --shadow-sm: 6px 6px 0 var(--ink);
+
+    /* Stage */
+    --stage-bg: #19140f;
+    --slide-bg: var(--paper);
+
+    /* Motion */
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur: 0.6s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES (viewport-base.css)
+   =========================================== */
+html, body {
+    width: 100%; height: 100%;
+    margin: 0; overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-viewport {
+    position: fixed; inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active, .slide.visible {
+    visibility: visible; opacity: 1; pointer-events: auto;
+    z-index: 1;
+}
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+.deck-controls {
+    position: fixed; left: 50%; bottom: 22px;
+    transform: translateX(-50%); z-index: 1000;
+}
+@media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .deck-viewport { position: static; overflow: visible; background: #fff; }
+    .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+    .slide {
+        position: relative; display: block !important;
+        visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        width: 1920px; height: 1080px;
+        break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .deck-controls { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   SLIDE FOUNDATION
+   Concrete grid backdrop + warm paper
+   =========================================== */
+.slide {
+    font-family: var(--font-display);
+    color: var(--ink);
+    padding: 96px 120px;
+    background-color: var(--paper);
+    /* faint structural grid — concrete/blueprint feel */
+    background-image:
+        linear-gradient(rgba(20,24,33,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20,24,33,0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+}
+
+/* shared kicker label (mono, uppercase) */
+.kicker {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--secondary);
+    display: inline-block;
+    padding: 8px 18px;
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+}
+.kicker.coral { background: var(--primary); color: var(--surface); }
+
+h1, h2 { font-weight: 900; line-height: 0.92; letter-spacing: -0.02em; }
+p { font-weight: 500; }
+
+/* slide page number chrome */
+.pageno {
+    position: absolute;
+    right: 56px; bottom: 48px;
+    font-family: var(--font-mono);
+    font-size: 20px; font-weight: 700;
+    color: var(--ink);
+    opacity: 0.55;
+}
+.slug {
+    position: absolute;
+    left: 120px; bottom: 48px;
+    font-family: var(--font-mono);
+    font-size: 18px; font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink); opacity: 0.45;
+}
+
+/* ===========================================
+   ANIMATIONS — staggered reveal on active slide
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(34px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-l {
+    opacity: 0; transform: translateX(-48px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slide.visible .reveal-l { opacity: 1; transform: translateX(0); }
+
+.slide.visible .d1 { transition-delay: 0.08s; }
+.slide.visible .d2 { transition-delay: 0.18s; }
+.slide.visible .d3 { transition-delay: 0.28s; }
+.slide.visible .d4 { transition-delay: 0.38s; }
+.slide.visible .d5 { transition-delay: 0.48s; }
+.slide.visible .d6 { transition-delay: 0.58s; }
+.slide.visible .d7 { transition-delay: 0.68s; }
+
+/* ===========================================
+   SLIDE 1 — TITLE
+   =========================================== */
+.title-slide { display: flex; align-items: center; gap: 90px; }
+.title-logo {
+    width: 420px; height: 420px;
+    object-fit: contain;
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 30px;
+    flex-shrink: 0;
+}
+.title-text { max-width: 980px; }
+.title-text h1 {
+    font-size: 168px;
+    margin-bottom: 8px;
+}
+.title-text .underline {
+    height: 18px; width: 360px;
+    background: var(--primary);
+    border: var(--border);
+    margin: 18px 0 36px;
+}
+.title-text .lede {
+    font-size: 44px; font-weight: 600;
+    line-height: 1.1; max-width: 860px;
+    margin-bottom: 38px;
+}
+.badge-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.badge {
+    font-family: var(--font-mono);
+    font-size: 20px; font-weight: 700;
+    padding: 10px 18px;
+    border: var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+.badge.b1 { background: var(--ink); color: #fff; }
+.badge.b2 { background: var(--secondary); }
+.badge.b3 { background: var(--primary); color: #fff; }
+
+/* ===========================================
+   SLIDE 2 — STATEMENT (Overview)
+   =========================================== */
+.statement { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+.statement .big {
+    font-size: 120px; line-height: 1.42;
+    max-width: 1560px; margin-top: 28px;
+}
+.statement .big em {
+    font-style: normal;
+    background: var(--primary); color: var(--surface);
+    padding: 2px 14px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+.statement .big .gold {
+    background: var(--secondary); color: var(--ink);
+    padding: 2px 14px;
+    box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.statement .sub {
+    font-size: 38px; font-weight: 500;
+    max-width: 1280px; margin-top: 44px;
+    line-height: 1.25;
+}
+.statement .sub strong { font-weight: 800; }
+
+/* ===========================================
+   SLIDE 3 — FEATURE GRID
+   =========================================== */
+.head-row { display: flex; align-items: center; gap: 28px; margin-bottom: 56px; }
+.head-row h2 { font-size: 100px; }
+
+.feat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 36px;
+}
+.feat {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 38px 42px;
+    display: flex; gap: 28px; align-items: flex-start;
+}
+.feat .num {
+    font-family: var(--font-mono);
+    font-size: 40px; font-weight: 700;
+    line-height: 1;
+    color: var(--surface);
+    background: var(--ink);
+    width: 72px; height: 72px;
+    display: flex; align-items: center; justify-content: center;
+    border: var(--border);
+    flex-shrink: 0;
+}
+.feat:nth-child(1) .num { background: var(--primary); }
+.feat:nth-child(2) .num { background: var(--secondary); color: var(--ink); }
+.feat:nth-child(3) .num { background: var(--ink); }
+.feat:nth-child(4) .num { background: var(--primary); }
+.feat h3 { font-size: 46px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+.feat p { font-size: 27px; font-weight: 500; line-height: 1.2; color: #3a3f49; }
+
+/* ===========================================
+   SLIDE 4 — HOW IT WORKS (architecture)
+   =========================================== */
+.arch { display: flex; flex-direction: column; height: 100%; }
+.arch-flow {
+    display: flex; align-items: stretch; gap: 0;
+    margin-top: 30px;
+}
+.node {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 34px 30px;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 12px;
+}
+.node .tag {
+    font-family: var(--font-mono);
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--primary);
+}
+.node h3 { font-size: 42px; font-weight: 800; line-height: 0.98; }
+.node p { font-size: 24px; font-weight: 500; line-height: 1.18; color: #3a3f49; }
+.node.dark { background: var(--ink); }
+.node.dark h3, .node.dark p { color: var(--surface); }
+.node.dark .tag { color: var(--secondary); }
+.arrow {
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 64px; font-weight: 700;
+    padding: 0 26px;
+    color: var(--ink);
+}
+.arch-note {
+    margin-top: 48px;
+    background: var(--secondary);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 30px 38px;
+    font-size: 30px; font-weight: 600; line-height: 1.2;
+    display: flex; align-items: center; gap: 22px;
+}
+.arch-note .mk {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--ink); color: var(--surface);
+    padding: 6px 14px; font-size: 22px; flex-shrink: 0;
+}
+
+/* ===========================================
+   SLIDE 5 — PIPELINE STEPS
+   =========================================== */
+.pipe-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    margin-top: 50px;
+}
+.step {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 30px 28px;
+    position: relative;
+    min-height: 250px;
+}
+.step .sn {
+    font-family: var(--font-mono);
+    font-size: 26px; font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 14px;
+}
+.step h3 { font-size: 40px; font-weight: 800; line-height: 0.98; margin-bottom: 12px; }
+.step p { font-size: 23px; font-weight: 500; line-height: 1.18; color: #3a3f49; }
+.step.accent { background: var(--ink); }
+.step.accent .sn { color: var(--secondary); }
+.step.accent h3, .step.accent p { color: var(--surface); }
+.step.gold { background: var(--secondary); }
+.step.gold .sn { color: var(--ink); }
+
+/* ===========================================
+   SLIDE 6 — PRIVACY STATEMENT
+   =========================================== */
+.privacy { display: flex; gap: 80px; height: 100%; align-items: center; }
+.privacy-left { flex: 1.1; }
+.privacy-left h2 { font-size: 120px; line-height: 0.9; }
+.privacy-left .hl { color: var(--primary); }
+.privacy-left p {
+    font-size: 36px; font-weight: 500; line-height: 1.25;
+    margin-top: 36px; max-width: 720px; color: #2a2e36;
+}
+.privacy-right {
+    flex: 0.9;
+    display: flex; flex-direction: column; gap: 24px;
+}
+.pcard {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 28px 34px;
+}
+.pcard .pt {
+    font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--primary); margin-bottom: 8px;
+}
+.pcard .pd { font-size: 30px; font-weight: 600; line-height: 1.12; }
+.pcard:nth-child(2) .pt { color: var(--secondary); }
+
+/* ===========================================
+   SLIDE 7 — GET STARTED
+   =========================================== */
+.gs { display: flex; gap: 70px; height: 100%; align-items: center; }
+.gs-left { flex: 1; }
+.gs-left h2 { font-size: 108px; line-height: 0.9; margin-bottom: 40px; }
+.gs-steps { display: flex; flex-direction: column; gap: 24px; }
+.gstep {
+    display: flex; align-items: center; gap: 26px;
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 24px 30px;
+}
+.gstep .gn {
+    font-family: var(--font-mono); font-size: 34px; font-weight: 700;
+    color: var(--surface); background: var(--ink);
+    width: 64px; height: 64px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: var(--border);
+}
+.gstep:nth-child(1) .gn { background: var(--primary); }
+.gstep:nth-child(2) .gn { background: var(--secondary); color: var(--ink); }
+.gstep p { font-size: 32px; font-weight: 600; line-height: 1.1; }
+.gstep code {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--paper); padding: 2px 8px; font-size: 26px;
+    border: 2px solid var(--ink);
+}
+.gs-right { flex: 0.85; }
+.terminal {
+    background: var(--ink);
+    border: var(--border);
+    box-shadow: var(--shadow);
+}
+.terminal .bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 22px;
+    border-bottom: 3px solid #2c3340;
+}
+.terminal .dot { width: 18px; height: 18px; border-radius: 50%; }
+.terminal .dot.r { background: var(--danger); }
+.terminal .dot.y { background: var(--secondary); }
+.terminal .dot.g { background: var(--success); }
+.terminal .bar span {
+    font-family: var(--font-mono); font-size: 18px; font-weight: 500;
+    color: #8b94a3; margin-left: 12px; letter-spacing: 0.08em;
+}
+.terminal .body {
+    padding: 34px 36px;
+    font-family: var(--font-mono); font-size: 27px; font-weight: 500;
+    line-height: 1.7;
+}
+.terminal .body .c { color: #6b7686; }
+.terminal .body .p { color: var(--primary); }
+.terminal .body .cmd { color: #f4eee3; }
+.terminal .body .ok { color: var(--success); }
+
+/* ===========================================
+   SLIDE 8 — TECH STACK
+   =========================================== */
+.stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 54px;
+}
+.tcell {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 34px 36px;
+}
+.tcell .layer {
+    font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--primary); margin-bottom: 14px;
+}
+.tcell .tech { font-size: 46px; font-weight: 800; line-height: 0.98; }
+.tcell .meta { font-size: 24px; font-weight: 500; color: #3a3f49; margin-top: 8px; line-height: 1.15; }
+.tcell:nth-child(2) .layer, .tcell:nth-child(5) .layer { color: var(--secondary); }
+.tcell.fill { background: var(--ink); }
+.tcell.fill .tech { color: var(--surface); }
+.tcell.fill .meta { color: #aab2c0; }
+.tcell.fill .layer { color: var(--secondary); }
+
+/* ===========================================
+   SLIDE 9 — CLOSING
+   =========================================== */
+.closing {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; height: 100%; gap: 30px;
+}
+.closing img {
+    width: 300px; height: 300px; object-fit: contain;
+    background: var(--surface); border: var(--border);
+    box-shadow: var(--shadow); padding: 24px;
+}
+.closing h2 { font-size: 130px; }
+.closing .repo {
+    font-family: var(--font-mono); font-size: 38px; font-weight: 700;
+    background: var(--ink); color: var(--surface);
+    padding: 18px 36px; border: var(--border); box-shadow: var(--shadow-sm);
+    margin-top: 6px;
+    text-decoration: none; cursor: pointer; display: inline-block;
+    transition: transform 0.12s var(--ease), box-shadow 0.12s var(--ease), background 0.12s;
+}
+.closing .repo:hover {
+    background: var(--primary);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--ink);
+}
+.closing .repo:active {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0 var(--ink);
+}
+.closing .tagline { font-size: 40px; font-weight: 600; }
+
+/* ===========================================
+   EDIT MODE (inline editing affordance)
+   =========================================== */
+.edit-hotzone {
+    position: fixed; top: 0; left: 0;
+    width: 80px; height: 80px; z-index: 10000; cursor: pointer;
+}
+.edit-toggle {
+    position: fixed; top: 18px; left: 18px;
+    width: 52px; height: 52px;
+    font-size: 24px;
+    border: 3px solid var(--ink); background: var(--secondary);
+    cursor: pointer; opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease; z-index: 10001;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { background: var(--primary); }
+body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-offset: 4px; }
+
+/* ===========================================
+   NAV CHROME
+   =========================================== */
+.deck-controls {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--font-mono);
+}
+.deck-controls button {
+    width: 46px; height: 46px;
+    border: 3px solid var(--paper);
+    background: var(--ink); color: var(--paper);
+    font-size: 22px; font-weight: 700; cursor: pointer;
+    transition: background 0.15s;
+}
+.deck-controls button:hover { background: var(--primary); }
+.deck-controls .count {
+    color: var(--paper); font-size: 18px; font-weight: 700;
+    letter-spacing: 0.1em; padding: 0 8px;
+}
+.progress-bar {
+    position: fixed; top: 0; left: 0; height: 6px;
+    background: var(--primary); z-index: 1000;
+    transition: width 0.4s var(--ease);
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+    <!-- === SLIDE 1: TITLE === -->
+    <section class="slide title-slide active">
+        <img class="title-logo reveal d1" src="logo.png" alt="Clean Bookmarks logo">
+        <div class="title-text">
+            <h1 class="reveal d2" contenteditable="false">Clean<br>Bookmarks</h1>
+            <div class="underline reveal d3"></div>
+            <p class="lede reveal d4" contenteditable="false">AI-powered bookmark organizer for Chromium. Local-first, bring-your-own-key.</p>
+            <div class="badge-row reveal d5">
+                <span class="badge b1" contenteditable="false">TypeScript</span>
+                <span class="badge b2" contenteditable="false">Bun</span>
+                <span class="badge b3" contenteditable="false">Chrome MV3</span>
+                <span class="badge" contenteditable="false">MIT</span>
+            </div>
+        </div>
+        <div class="slug">github.com/shafiqimtiaz/clean-bookmarks</div>
+    </section>
+
+    <!-- === SLIDE 2: OVERVIEW STATEMENT === -->
+    <section class="slide statement">
+        <span class="kicker coral reveal d1">The Problem</span>
+        <h1 class="big reveal d2" contenteditable="false">Your bookmark <em>junk drawer</em>,<br>turned into a <span class="gold">clean tree</span>.</h1>
+        <p class="sub reveal d3" contenteditable="false">Clean Bookmarks scans the loose items in <strong>Other Bookmarks</strong> and your <strong>Bookmarks Bar</strong>, asks an AI to propose a category structure, lets you tune it, then sorts everything into place. One click and it's all back the way it was.</p>
+        <div class="slug">Overview</div>
+        <div class="pageno">02</div>
+    </section>
+
+    <!-- === SLIDE 3: FEATURES === -->
+    <section class="slide">
+        <div class="head-row">
+            <span class="kicker reveal-l d1">Features</span>
+            <h2 class="reveal-l d1" contenteditable="false">What it does</h2>
+        </div>
+        <div class="feat-grid">
+            <div class="feat reveal d2">
+                <div class="num">01</div>
+                <div>
+                    <h3 contenteditable="false">Two-pass AI</h3>
+                    <p contenteditable="false">First proposes a taxonomy of 8–15 categories, then assigns every bookmark to it. Consistent across thousands.</p>
+                </div>
+            </div>
+            <div class="feat reveal d3">
+                <div class="num">02</div>
+                <div>
+                    <h3 contenteditable="false">You stay in control</h3>
+                    <p contenteditable="false">Review the proposed categories. Rename, remove, or add before anything moves.</p>
+                </div>
+            </div>
+            <div class="feat reveal d4">
+                <div class="num">03</div>
+                <div>
+                    <h3 contenteditable="false">Non-destructive</h3>
+                    <p contenteditable="false">Named folders are never touched. Results land in a dated 📁 Organized — YYYY-MM-DD folder.</p>
+                </div>
+            </div>
+            <div class="feat reveal d5">
+                <div class="num">04</div>
+                <div>
+                    <h3 contenteditable="false">One-click undo</h3>
+                    <p contenteditable="false">The layout is snapshotted before any change. A single click restores it.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slug">Features</div>
+        <div class="pageno">03</div>
+    </section>
+
+    <!-- === SLIDE 4: HOW IT WORKS / ARCHITECTURE === -->
+    <section class="slide arch">
+        <div class="head-row">
+            <span class="kicker coral reveal-l d1">How it works</span>
+            <h2 class="reveal-l d1" contenteditable="false">A small state machine</h2>
+        </div>
+        <div class="arch-flow">
+            <div class="node reveal d2">
+                <span class="tag">Toolbar popup</span>
+                <h3 contenteditable="false">Organize</h3>
+                <p contenteditable="false">Kicks off the run.</p>
+            </div>
+            <div class="arrow reveal d3">→</div>
+            <div class="node dark reveal d3">
+                <span class="tag">Full-page tab</span>
+                <h3 contenteditable="false">Runs the long job</h3>
+                <p contenteditable="false">Stays alive for multi-minute runs.</p>
+            </div>
+            <div class="arrow reveal d4">→</div>
+            <div class="node reveal d4">
+                <span class="tag">Service worker</span>
+                <h3 contenteditable="false">chrome.bookmarks</h3>
+                <p contenteditable="false">Brokers fast read / apply / undo.</p>
+            </div>
+            <div class="arrow reveal d5">→</div>
+            <div class="node reveal d5">
+                <span class="tag">Your provider</span>
+                <h3 contenteditable="false">The AI</h3>
+                <p contenteditable="false">The endpoint you configure.</p>
+            </div>
+        </div>
+        <div class="arch-note reveal d6">
+            <span class="mk">WHY A TAB?</span>
+            <span contenteditable="false">MV3 service workers die after ~30s idle — that would interrupt a long run. The tab context stays alive instead.</span>
+        </div>
+        <div class="slug">Architecture</div>
+        <div class="pageno">04</div>
+    </section>
+
+    <!-- === SLIDE 5: PIPELINE === -->
+    <section class="slide">
+        <div class="head-row">
+            <span class="kicker reveal-l d1">Pipeline</span>
+            <h2 class="reveal-l d1" contenteditable="false">Read → Sort → Apply</h2>
+        </div>
+        <div class="pipe-grid">
+            <div class="step reveal d2">
+                <div class="sn">01</div>
+                <h3 contenteditable="false">Read scope</h3>
+                <p contenteditable="false">Collect the junk drawer. Named folders left alone.</p>
+            </div>
+            <div class="step reveal d2">
+                <div class="sn">02</div>
+                <h3 contenteditable="false">Estimate</h3>
+                <p contenteditable="false">Batches, tokens, and dollar cost — shown before you spend.</p>
+            </div>
+            <div class="step accent reveal d3">
+                <div class="sn">03</div>
+                <h3 contenteditable="false">Propose taxonomy</h3>
+                <p contenteditable="false">TypeBox-typed tool returns validated structured args. No JSON parsing.</p>
+            </div>
+            <div class="step gold reveal d3">
+                <div class="sn">04</div>
+                <h3 contenteditable="false">Review</h3>
+                <p contenteditable="false">You edit the proposed categories.</p>
+            </div>
+            <div class="step reveal d4">
+                <div class="sn">05</div>
+                <h3 contenteditable="false">Assign</h3>
+                <p contenteditable="false">Parallel batches by numeric index, validated against a Zod schema.</p>
+            </div>
+            <div class="step reveal d4">
+                <div class="sn">06</div>
+                <h3 contenteditable="false">Apply</h3>
+                <p contenteditable="false">Snapshot taken, then bookmarks move into the dated folder.</p>
+            </div>
+            <div class="step accent reveal d5">
+                <div class="sn">07</div>
+                <h3 contenteditable="false">Undo</h3>
+                <p contenteditable="false">Restore the snapshot at any time.</p>
+            </div>
+            <div class="step gold reveal d5">
+                <div class="sn">★</div>
+                <h3 contenteditable="false">Resilient</h3>
+                <p contenteditable="false">Bounded concurrency, retries, safe Unsorted fallback.</p>
+            </div>
+        </div>
+        <div class="slug">Pipeline</div>
+        <div class="pageno">05</div>
+    </section>
+
+    <!-- === SLIDE 6: PRIVACY === -->
+    <section class="slide privacy">
+        <div class="privacy-left">
+            <span class="kicker coral reveal-l d1">Privacy</span>
+            <h2 class="reveal-l d2" contenteditable="false">No backend.<br>No account.<br><span class="hl">No data store.</span></h2>
+            <p class="reveal-l d3" contenteditable="false">Your bookmarks stay in your browser. The only thing that ever leaves your device is bookmark titles and URLs — sent to the AI endpoint you configure.</p>
+        </div>
+        <div class="privacy-right">
+            <div class="pcard reveal d3">
+                <div class="pt">Bring your own key</div>
+                <div class="pd" contenteditable="false">Stored in chrome.storage.local. Never synced.</div>
+            </div>
+            <div class="pcard reveal d4">
+                <div class="pt">Minimal payload</div>
+                <div class="pd" contenteditable="false">Only titles and URLs leave. Nothing else.</div>
+            </div>
+            <div class="pcard reveal d5">
+                <div class="pt">Scoped permissions</div>
+                <div class="pd" contenteditable="false">No install-time host access. Granted per-origin on first use.</div>
+            </div>
+        </div>
+        <div class="slug">Privacy</div>
+        <div class="pageno">06</div>
+    </section>
+
+    <!-- === SLIDE 7: GET STARTED === -->
+    <section class="slide gs">
+        <div class="gs-left">
+            <span class="kicker reveal-l d1">Get started</span>
+            <h2 class="reveal-l d2" contenteditable="false">Build &amp; load</h2>
+            <div class="gs-steps">
+                <div class="gstep reveal-l d3">
+                    <div class="gn">1</div>
+                    <p contenteditable="false">Open <code>chrome://extensions</code></p>
+                </div>
+                <div class="gstep reveal-l d4">
+                    <div class="gn">2</div>
+                    <p contenteditable="false">Enable <strong>Developer mode</strong></p>
+                </div>
+                <div class="gstep reveal-l d5">
+                    <div class="gn">3</div>
+                    <p contenteditable="false">Load unpacked → pick <code>dist/</code></p>
+                </div>
+            </div>
+        </div>
+        <div class="gs-right">
+            <div class="terminal reveal d3">
+                <div class="bar">
+                    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                    <span>bash — clean-bookmarks</span>
+                </div>
+                <div class="body">
+                    <div><span class="p">$</span> <span class="cmd">git clone …/clean-bookmarks.git</span></div>
+                    <div><span class="p">$</span> <span class="cmd">cd clean-bookmarks</span></div>
+                    <div><span class="p">$</span> <span class="cmd">bun install</span></div>
+                    <div><span class="p">$</span> <span class="cmd">bun run build</span></div>
+                    <div><span class="ok">✓ bundled to dist/</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="slug">Get started</div>
+        <div class="pageno">07</div>
+    </section>
+
+    <!-- === SLIDE 8: TECH STACK === -->
+    <section class="slide">
+        <div class="head-row">
+            <span class="kicker coral reveal-l d1">Tech stack</span>
+            <h2 class="reveal-l d1" contenteditable="false">Under the hood</h2>
+        </div>
+        <div class="stack-grid">
+            <div class="tcell reveal d2">
+                <div class="layer">Language</div>
+                <div class="tech" contenteditable="false">TypeScript</div>
+                <div class="meta" contenteditable="false">Typed end to end</div>
+            </div>
+            <div class="tcell fill reveal d2">
+                <div class="layer">Runtime</div>
+                <div class="tech" contenteditable="false">Bun</div>
+                <div class="meta" contenteditable="false">bun build bundler</div>
+            </div>
+            <div class="tcell reveal d3">
+                <div class="layer">Platform</div>
+                <div class="tech" contenteditable="false">Chrome MV3</div>
+                <div class="meta" contenteditable="false">Manifest V3</div>
+            </div>
+            <div class="tcell reveal d3">
+                <div class="layer">AI</div>
+                <div class="tech" contenteditable="false">pi-ai</div>
+                <div class="meta" contenteditable="false">Multi-provider streaming</div>
+            </div>
+            <div class="tcell fill reveal d4">
+                <div class="layer">Validation</div>
+                <div class="tech" contenteditable="false">Zod + TypeBox</div>
+                <div class="meta" contenteditable="false">Parse-time + tool schemas</div>
+            </div>
+            <div class="tcell reveal d4">
+                <div class="layer">UI</div>
+                <div class="tech" contenteditable="false">Vanilla DOM</div>
+                <div class="meta" contenteditable="false">No framework</div>
+            </div>
+        </div>
+        <div class="slug">Tech stack</div>
+        <div class="pageno">08</div>
+    </section>
+
+    <!-- === SLIDE 9: CLOSING === -->
+    <section class="slide closing">
+        <img class="reveal d1" src="logo.png" alt="Clean Bookmarks logo">
+        <h2 class="reveal d2" contenteditable="false">Clean your drawer.</h2>
+        <p class="tagline reveal d3" contenteditable="false">Local-first · Bring-your-own-key · One-click undo</p>
+        <a class="repo reveal d4" href="https://github.com/shafiqimtiaz/clean-bookmarks" target="_blank" rel="noopener">github.com/shafiqimtiaz/clean-bookmarks ↗</a>
+        <div class="pageno">09</div>
+    </section>
+
+</main>
+</div>
+
+<!-- Inline edit affordance -->
+<div class="edit-hotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (E)">✏️</button>
+
+<!-- Nav chrome -->
+<div class="deck-controls">
+    <button id="prevBtn" aria-label="Previous slide">‹</button>
+    <span class="count" id="counter">01 / 09</span>
+    <button id="nextBtn" aria-label="Next slide">›</button>
+</div>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   Fixed 16:9 stage, keyboard / touch / wheel nav
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.current = 0;
+        this.stage = document.getElementById('deckStage');
+        this.bar = document.getElementById('progressBar');
+        this.counter = document.getElementById('counter');
+        this.setupScale();
+        this.setupKeyboard();
+        this.setupTouch();
+        this.setupWheel();
+        document.getElementById('nextBtn').addEventListener('click', () => this.go(this.current + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => this.go(this.current - 1));
+        this.show(0);
+    }
+
+    /* Scale the whole 1920×1080 stage to fit the viewport (letterbox) */
+    setupScale() {
+        const scale = () => {
+            const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * f) / 2;
+            const y = (window.innerHeight - 1080 * f) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+
+    setupKeyboard() {
+        document.addEventListener('keydown', (e) => {
+            if (e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true') return;
+            if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); this.go(this.current + 1); }
+            if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); this.go(this.current - 1); }
+            if (e.key === 'Home') this.go(0);
+            if (e.key === 'End') this.go(this.slides.length - 1);
+        });
+    }
+
+    setupTouch() {
+        let sx = 0, sy = 0;
+        document.addEventListener('touchstart', (e) => { sx = e.changedTouches[0].clientX; sy = e.changedTouches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - sx;
+            const dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) this.go(this.current + (dx < 0 ? 1 : -1));
+        }, { passive: true });
+    }
+
+    setupWheel() {
+        let lock = false;
+        window.addEventListener('wheel', (e) => {
+            if (lock) return;
+            if (Math.abs(e.deltaY) < 30) return;
+            lock = true;
+            this.go(this.current + (e.deltaY > 0 ? 1 : -1));
+            setTimeout(() => { lock = false; }, 700);
+        }, { passive: true });
+    }
+
+    go(i) { this.show(Math.max(0, Math.min(i, this.slides.length - 1))); }
+
+    show(i) {
+        this.current = i;
+        this.slides.forEach((s, idx) => {
+            s.classList.toggle('active', idx === i);
+            s.classList.toggle('visible', idx === i);
+        });
+        const pad = (n) => String(n).padStart(2, '0');
+        this.counter.textContent = `${pad(i + 1)} / ${pad(this.slides.length)}`;
+        this.bar.style.width = ((i + 1) / this.slides.length * 100) + '%';
+    }
+}
+
+/* ===========================================
+   INLINE EDITOR — hover hotzone + E key, localStorage autosave
+   =========================================== */
+class InlineEditor {
+    constructor() {
+        this.isActive = false;
+        this.editables = document.querySelectorAll('[contenteditable]');
+        this.key = 'clean-bookmarks-deck-edits';
+        this.restore();
+        this.editables.forEach(el => el.addEventListener('input', () => this.save()));
+    }
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('editing', this.isActive);
+        document.getElementById('editToggle').classList.toggle('active', this.isActive);
+        this.editables.forEach(el => el.setAttribute('contenteditable', this.isActive ? 'true' : 'false'));
+    }
+    save() {
+        const data = {};
+        this.editables.forEach((el, i) => data[i] = el.innerHTML);
+        try { localStorage.setItem(this.key, JSON.stringify(data)); } catch (e) {}
+    }
+    restore() {
+        try {
+            const data = JSON.parse(localStorage.getItem(this.key) || '{}');
+            this.editables.forEach((el, i) => { if (data[i] !== undefined) el.innerHTML = data[i]; });
+        } catch (e) {}
+    }
+}
+
+const deck = new SlidePresentation();
+const editor = new InlineEditor();
+
+/* Edit affordance wiring */
+const hotzone = document.querySelector('.edit-hotzone');
+const editToggle = document.getElementById('editToggle');
+let hideTimeout = null;
+hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); editToggle.classList.add('show'); });
+hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
+editToggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+editToggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
+hotzone.addEventListener('click', () => editor.toggleEditMode());
+editToggle.addEventListener('click', () => editor.toggleEditMode());
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'e' || e.key === 'E') && !(e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true')) {
+        editor.toggleEditMode();
+    }
+});
+</script>
+</body>
+</html>
