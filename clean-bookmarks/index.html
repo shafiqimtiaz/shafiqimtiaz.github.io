@@ -515,25 +515,6 @@ p { font-weight: 500; }
 .closing .tagline { font-size: 40px; font-weight: 600; }
 
 /* ===========================================
-   EDIT MODE (inline editing affordance)
-   =========================================== */
-.edit-hotzone {
-    position: fixed; top: 0; left: 0;
-    width: 80px; height: 80px; z-index: 10000; cursor: pointer;
-}
-.edit-toggle {
-    position: fixed; top: 18px; left: 18px;
-    width: 52px; height: 52px;
-    font-size: 24px;
-    border: 3px solid var(--ink); background: var(--secondary);
-    cursor: pointer; opacity: 0; pointer-events: none;
-    transition: opacity 0.3s ease; z-index: 10001;
-}
-.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
-.edit-toggle.active { background: var(--primary); }
-body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-offset: 4px; }
-
-/* ===========================================
    NAV CHROME
    =========================================== */
 .deck-controls {
@@ -568,14 +549,14 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <section class="slide title-slide active">
         <img class="title-logo reveal d1" src="logo.png" alt="Clean Bookmarks logo">
         <div class="title-text">
-            <h1 class="reveal d2" contenteditable="false">Clean<br>Bookmarks</h1>
+            <h1 class="reveal d2">Clean<br>Bookmarks</h1>
             <div class="underline reveal d3"></div>
-            <p class="lede reveal d4" contenteditable="false">AI-powered bookmark organizer for Chromium. Local-first, bring-your-own-key.</p>
+            <p class="lede reveal d4">AI-powered bookmark organizer for Chromium. Local-first, bring-your-own-key.</p>
             <div class="badge-row reveal d5">
-                <span class="badge b1" contenteditable="false">TypeScript</span>
-                <span class="badge b2" contenteditable="false">Bun</span>
-                <span class="badge b3" contenteditable="false">Chrome MV3</span>
-                <span class="badge" contenteditable="false">MIT</span>
+                <span class="badge b1">TypeScript</span>
+                <span class="badge b2">Bun</span>
+                <span class="badge b3">Chrome MV3</span>
+                <span class="badge">MIT</span>
             </div>
         </div>
         <div class="slug">github.com/shafiqimtiaz/clean-bookmarks</div>
@@ -584,8 +565,8 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <!-- === SLIDE 2: OVERVIEW STATEMENT === -->
     <section class="slide statement">
         <span class="kicker coral reveal d1">The Problem</span>
-        <h1 class="big reveal d2" contenteditable="false">Your bookmark <em>junk drawer</em>,<br>turned into a <span class="gold">clean tree</span>.</h1>
-        <p class="sub reveal d3" contenteditable="false">Clean Bookmarks scans the loose items in <strong>Other Bookmarks</strong> and your <strong>Bookmarks Bar</strong>, asks an AI to propose a category structure, lets you tune it, then sorts everything into place. One click and it's all back the way it was.</p>
+        <h1 class="big reveal d2">Your bookmark <em>junk drawer</em>,<br>turned into a <span class="gold">clean tree</span>.</h1>
+        <p class="sub reveal d3">Clean Bookmarks scans the loose items in <strong>Other Bookmarks</strong> and your <strong>Bookmarks Bar</strong>, asks an AI to propose a category structure, lets you tune it, then sorts everything into place. One click and it's all back the way it was.</p>
         <div class="slug">Overview</div>
         <div class="pageno">02</div>
     </section>
@@ -594,35 +575,35 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <section class="slide">
         <div class="head-row">
             <span class="kicker reveal-l d1">Features</span>
-            <h2 class="reveal-l d1" contenteditable="false">What it does</h2>
+            <h2 class="reveal-l d1">What it does</h2>
         </div>
         <div class="feat-grid">
             <div class="feat reveal d2">
                 <div class="num">01</div>
                 <div>
-                    <h3 contenteditable="false">Two-pass AI</h3>
-                    <p contenteditable="false">First proposes a taxonomy of 8–15 categories, then assigns every bookmark to it. Consistent across thousands.</p>
+                    <h3>Two-pass AI</h3>
+                    <p>First proposes a taxonomy of 8–15 categories, then assigns every bookmark to it. Consistent across thousands.</p>
                 </div>
             </div>
             <div class="feat reveal d3">
                 <div class="num">02</div>
                 <div>
-                    <h3 contenteditable="false">You stay in control</h3>
-                    <p contenteditable="false">Review the proposed categories. Rename, remove, or add before anything moves.</p>
+                    <h3>You stay in control</h3>
+                    <p>Review the proposed categories. Rename, remove, or add before anything moves.</p>
                 </div>
             </div>
             <div class="feat reveal d4">
                 <div class="num">03</div>
                 <div>
-                    <h3 contenteditable="false">Non-destructive</h3>
-                    <p contenteditable="false">Named folders are never touched. Results land in a dated 📁 Organized — YYYY-MM-DD folder.</p>
+                    <h3>Non-destructive</h3>
+                    <p>Named folders are never touched. Results land in a dated 📁 Organized — YYYY-MM-DD folder.</p>
                 </div>
             </div>
             <div class="feat reveal d5">
                 <div class="num">04</div>
                 <div>
-                    <h3 contenteditable="false">One-click undo</h3>
-                    <p contenteditable="false">The layout is snapshotted before any change. A single click restores it.</p>
+                    <h3>One-click undo</h3>
+                    <p>The layout is snapshotted before any change. A single click restores it.</p>
                 </div>
             </div>
         </div>
@@ -634,36 +615,36 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <section class="slide arch">
         <div class="head-row">
             <span class="kicker coral reveal-l d1">How it works</span>
-            <h2 class="reveal-l d1" contenteditable="false">A small state machine</h2>
+            <h2 class="reveal-l d1">A small state machine</h2>
         </div>
         <div class="arch-flow">
             <div class="node reveal d2">
                 <span class="tag">Toolbar popup</span>
-                <h3 contenteditable="false">Organize</h3>
-                <p contenteditable="false">Kicks off the run.</p>
+                <h3>Organize</h3>
+                <p>Kicks off the run.</p>
             </div>
             <div class="arrow reveal d3">→</div>
             <div class="node dark reveal d3">
                 <span class="tag">Full-page tab</span>
-                <h3 contenteditable="false">Runs the long job</h3>
-                <p contenteditable="false">Stays alive for multi-minute runs.</p>
+                <h3>Runs the long job</h3>
+                <p>Stays alive for multi-minute runs.</p>
             </div>
             <div class="arrow reveal d4">→</div>
             <div class="node reveal d4">
                 <span class="tag">Service worker</span>
-                <h3 contenteditable="false">chrome.bookmarks</h3>
-                <p contenteditable="false">Brokers fast read / apply / undo.</p>
+                <h3>chrome.bookmarks</h3>
+                <p>Brokers fast read / apply / undo.</p>
             </div>
             <div class="arrow reveal d5">→</div>
             <div class="node reveal d5">
                 <span class="tag">Your provider</span>
-                <h3 contenteditable="false">The AI</h3>
-                <p contenteditable="false">The endpoint you configure.</p>
+                <h3>The AI</h3>
+                <p>The endpoint you configure.</p>
             </div>
         </div>
         <div class="arch-note reveal d6">
             <span class="mk">WHY A TAB?</span>
-            <span contenteditable="false">MV3 service workers die after ~30s idle — that would interrupt a long run. The tab context stays alive instead.</span>
+            <span>MV3 service workers die after ~30s idle — that would interrupt a long run. The tab context stays alive instead.</span>
         </div>
         <div class="slug">Architecture</div>
         <div class="pageno">04</div>
@@ -673,48 +654,48 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <section class="slide">
         <div class="head-row">
             <span class="kicker reveal-l d1">Pipeline</span>
-            <h2 class="reveal-l d1" contenteditable="false">Read → Sort → Apply</h2>
+            <h2 class="reveal-l d1">Read → Sort → Apply</h2>
         </div>
         <div class="pipe-grid">
             <div class="step reveal d2">
                 <div class="sn">01</div>
-                <h3 contenteditable="false">Read scope</h3>
-                <p contenteditable="false">Collect the junk drawer. Named folders left alone.</p>
+                <h3>Read scope</h3>
+                <p>Collect the junk drawer. Named folders left alone.</p>
             </div>
             <div class="step reveal d2">
                 <div class="sn">02</div>
-                <h3 contenteditable="false">Estimate</h3>
-                <p contenteditable="false">Batches, tokens, and dollar cost — shown before you spend.</p>
+                <h3>Estimate</h3>
+                <p>Batches, tokens, and dollar cost — shown before you spend.</p>
             </div>
             <div class="step accent reveal d3">
                 <div class="sn">03</div>
-                <h3 contenteditable="false">Propose taxonomy</h3>
-                <p contenteditable="false">TypeBox-typed tool returns validated structured args. No JSON parsing.</p>
+                <h3>Propose taxonomy</h3>
+                <p>TypeBox-typed tool returns validated structured args. No JSON parsing.</p>
             </div>
             <div class="step gold reveal d3">
                 <div class="sn">04</div>
-                <h3 contenteditable="false">Review</h3>
-                <p contenteditable="false">You edit the proposed categories.</p>
+                <h3>Review</h3>
+                <p>You edit the proposed categories.</p>
             </div>
             <div class="step reveal d4">
                 <div class="sn">05</div>
-                <h3 contenteditable="false">Assign</h3>
-                <p contenteditable="false">Parallel batches by numeric index, validated against a Zod schema.</p>
+                <h3>Assign</h3>
+                <p>Parallel batches by numeric index, validated against a Zod schema.</p>
             </div>
             <div class="step reveal d4">
                 <div class="sn">06</div>
-                <h3 contenteditable="false">Apply</h3>
-                <p contenteditable="false">Snapshot taken, then bookmarks move into the dated folder.</p>
+                <h3>Apply</h3>
+                <p>Snapshot taken, then bookmarks move into the dated folder.</p>
             </div>
             <div class="step accent reveal d5">
                 <div class="sn">07</div>
-                <h3 contenteditable="false">Undo</h3>
-                <p contenteditable="false">Restore the snapshot at any time.</p>
+                <h3>Undo</h3>
+                <p>Restore the snapshot at any time.</p>
             </div>
             <div class="step gold reveal d5">
                 <div class="sn">★</div>
-                <h3 contenteditable="false">Resilient</h3>
-                <p contenteditable="false">Bounded concurrency, retries, safe Unsorted fallback.</p>
+                <h3>Resilient</h3>
+                <p>Bounded concurrency, retries, safe Unsorted fallback.</p>
             </div>
         </div>
         <div class="slug">Pipeline</div>
@@ -725,21 +706,21 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <section class="slide privacy">
         <div class="privacy-left">
             <span class="kicker coral reveal-l d1">Privacy</span>
-            <h2 class="reveal-l d2" contenteditable="false">No backend.<br>No account.<br><span class="hl">No data store.</span></h2>
-            <p class="reveal-l d3" contenteditable="false">Your bookmarks stay in your browser. The only thing that ever leaves your device is bookmark titles and URLs — sent to the AI endpoint you configure.</p>
+            <h2 class="reveal-l d2">No backend.<br>No account.<br><span class="hl">No data store.</span></h2>
+            <p class="reveal-l d3">Your bookmarks stay in your browser. The only thing that ever leaves your device is bookmark titles and URLs — sent to the AI endpoint you configure.</p>
         </div>
         <div class="privacy-right">
             <div class="pcard reveal d3">
                 <div class="pt">Bring your own key</div>
-                <div class="pd" contenteditable="false">Stored in chrome.storage.local. Never synced.</div>
+                <div class="pd">Stored in chrome.storage.local. Never synced.</div>
             </div>
             <div class="pcard reveal d4">
                 <div class="pt">Minimal payload</div>
-                <div class="pd" contenteditable="false">Only titles and URLs leave. Nothing else.</div>
+                <div class="pd">Only titles and URLs leave. Nothing else.</div>
             </div>
             <div class="pcard reveal d5">
                 <div class="pt">Scoped permissions</div>
-                <div class="pd" contenteditable="false">No install-time host access. Granted per-origin on first use.</div>
+                <div class="pd">No install-time host access. Granted per-origin on first use.</div>
             </div>
         </div>
         <div class="slug">Privacy</div>
@@ -750,19 +731,19 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <section class="slide gs">
         <div class="gs-left">
             <span class="kicker reveal-l d1">Get started</span>
-            <h2 class="reveal-l d2" contenteditable="false">Build &amp; load</h2>
+            <h2 class="reveal-l d2">Build &amp; load</h2>
             <div class="gs-steps">
                 <div class="gstep reveal-l d3">
                     <div class="gn">1</div>
-                    <p contenteditable="false">Open <code>chrome://extensions</code></p>
+                    <p>Open <code>chrome://extensions</code></p>
                 </div>
                 <div class="gstep reveal-l d4">
                     <div class="gn">2</div>
-                    <p contenteditable="false">Enable <strong>Developer mode</strong></p>
+                    <p>Enable <strong>Developer mode</strong></p>
                 </div>
                 <div class="gstep reveal-l d5">
                     <div class="gn">3</div>
-                    <p contenteditable="false">Load unpacked → pick <code>dist/</code></p>
+                    <p>Load unpacked → pick <code>dist/</code></p>
                 </div>
             </div>
         </div>
@@ -789,38 +770,38 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <section class="slide">
         <div class="head-row">
             <span class="kicker coral reveal-l d1">Tech stack</span>
-            <h2 class="reveal-l d1" contenteditable="false">Under the hood</h2>
+            <h2 class="reveal-l d1">Under the hood</h2>
         </div>
         <div class="stack-grid">
             <div class="tcell reveal d2">
                 <div class="layer">Language</div>
-                <div class="tech" contenteditable="false">TypeScript</div>
-                <div class="meta" contenteditable="false">Typed end to end</div>
+                <div class="tech">TypeScript</div>
+                <div class="meta">Typed end to end</div>
             </div>
             <div class="tcell fill reveal d2">
                 <div class="layer">Runtime</div>
-                <div class="tech" contenteditable="false">Bun</div>
-                <div class="meta" contenteditable="false">bun build bundler</div>
+                <div class="tech">Bun</div>
+                <div class="meta">bun build bundler</div>
             </div>
             <div class="tcell reveal d3">
                 <div class="layer">Platform</div>
-                <div class="tech" contenteditable="false">Chrome MV3</div>
-                <div class="meta" contenteditable="false">Manifest V3</div>
+                <div class="tech">Chrome MV3</div>
+                <div class="meta">Manifest V3</div>
             </div>
             <div class="tcell reveal d3">
                 <div class="layer">AI</div>
-                <div class="tech" contenteditable="false">pi-ai</div>
-                <div class="meta" contenteditable="false">Multi-provider streaming</div>
+                <div class="tech">pi-ai</div>
+                <div class="meta">Multi-provider streaming</div>
             </div>
             <div class="tcell fill reveal d4">
                 <div class="layer">Validation</div>
-                <div class="tech" contenteditable="false">Zod + TypeBox</div>
-                <div class="meta" contenteditable="false">Parse-time + tool schemas</div>
+                <div class="tech">Zod + TypeBox</div>
+                <div class="meta">Parse-time + tool schemas</div>
             </div>
             <div class="tcell reveal d4">
                 <div class="layer">UI</div>
-                <div class="tech" contenteditable="false">Vanilla DOM</div>
-                <div class="meta" contenteditable="false">No framework</div>
+                <div class="tech">Vanilla DOM</div>
+                <div class="meta">No framework</div>
             </div>
         </div>
         <div class="slug">Tech stack</div>
@@ -830,18 +811,14 @@ body.editing [contenteditable] { outline: 3px dashed var(--primary); outline-off
     <!-- === SLIDE 9: CLOSING === -->
     <section class="slide closing">
         <img class="reveal d1" src="logo.png" alt="Clean Bookmarks logo">
-        <h2 class="reveal d2" contenteditable="false">Clean your drawer.</h2>
-        <p class="tagline reveal d3" contenteditable="false">Local-first · Bring-your-own-key · One-click undo</p>
+        <h2 class="reveal d2">Clean your drawer.</h2>
+        <p class="tagline reveal d3">Local-first · Bring-your-own-key · One-click undo</p>
         <a class="repo reveal d4" href="https://github.com/shafiqimtiaz/clean-bookmarks" target="_blank" rel="noopener">github.com/shafiqimtiaz/clean-bookmarks ↗</a>
         <div class="pageno">09</div>
     </section>
 
 </main>
 </div>
-
-<!-- Inline edit affordance -->
-<div class="edit-hotzone"></div>
-<button class="edit-toggle" id="editToggle" title="Edit mode (E)">✏️</button>
 
 <!-- Nav chrome -->
 <div class="deck-controls">
@@ -885,7 +862,6 @@ class SlidePresentation {
 
     setupKeyboard() {
         document.addEventListener('keydown', (e) => {
-            if (e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true') return;
             if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); this.go(this.current + 1); }
             if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); this.go(this.current - 1); }
             if (e.key === 'Home') this.go(0);
@@ -928,54 +904,7 @@ class SlidePresentation {
     }
 }
 
-/* ===========================================
-   INLINE EDITOR — hover hotzone + E key, localStorage autosave
-   =========================================== */
-class InlineEditor {
-    constructor() {
-        this.isActive = false;
-        this.editables = document.querySelectorAll('[contenteditable]');
-        this.key = 'clean-bookmarks-deck-edits';
-        this.restore();
-        this.editables.forEach(el => el.addEventListener('input', () => this.save()));
-    }
-    toggleEditMode() {
-        this.isActive = !this.isActive;
-        document.body.classList.toggle('editing', this.isActive);
-        document.getElementById('editToggle').classList.toggle('active', this.isActive);
-        this.editables.forEach(el => el.setAttribute('contenteditable', this.isActive ? 'true' : 'false'));
-    }
-    save() {
-        const data = {};
-        this.editables.forEach((el, i) => data[i] = el.innerHTML);
-        try { localStorage.setItem(this.key, JSON.stringify(data)); } catch (e) {}
-    }
-    restore() {
-        try {
-            const data = JSON.parse(localStorage.getItem(this.key) || '{}');
-            this.editables.forEach((el, i) => { if (data[i] !== undefined) el.innerHTML = data[i]; });
-        } catch (e) {}
-    }
-}
-
-const deck = new SlidePresentation();
-const editor = new InlineEditor();
-
-/* Edit affordance wiring */
-const hotzone = document.querySelector('.edit-hotzone');
-const editToggle = document.getElementById('editToggle');
-let hideTimeout = null;
-hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); editToggle.classList.add('show'); });
-hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
-editToggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
-editToggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) editToggle.classList.remove('show'); }, 400); });
-hotzone.addEventListener('click', () => editor.toggleEditMode());
-editToggle.addEventListener('click', () => editor.toggleEditMode());
-document.addEventListener('keydown', (e) => {
-    if ((e.key === 'e' || e.key === 'E') && !(e.target.getAttribute && e.target.getAttribute('contenteditable') === 'true')) {
-        editor.toggleEditMode();
-    }
-});
+new SlidePresentation();
 </script>
 </body>
 </html>
