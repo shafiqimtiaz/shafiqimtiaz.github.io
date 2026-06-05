@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shafiqimtiaz.github.io/sitemap.xml
