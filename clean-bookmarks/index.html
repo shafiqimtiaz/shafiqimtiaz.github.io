@@ -450,6 +450,21 @@ p { font-weight: 500; }
     background: var(--paper); padding: 1px 6px; font-size: 18px;
     border: 2px solid var(--ink);
 }
+.cta-big {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    padding: 28px 40px;
+    background: var(--coral); color: #fff;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700; font-size: 1.25rem;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: var(--shadow);
+}
+.cta-big:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+}
+.cta-big .dl { font-size: 1.5rem; }
 .terminal {
     background: var(--ink);
     border: var(--border);
@@ -780,50 +795,41 @@ p { font-weight: 500; }
         <div class="pageno">06</div>
     </section>
 
-    <!-- === SLIDE 7: GET STARTED === -->
+    <!-- === SLIDE 7: INSTALL === -->
     <section class="slide gs">
         <div class="gs-left">
-            <span class="kicker reveal-l d1">Get started</span>
-            <h2 class="reveal-l d2">Build &amp; load</h2>
+            <span class="kicker reveal-l d1">Install</span>
+            <h2 class="reveal-l d2">One click away</h2>
             <div class="gs-steps">
                 <div class="gstep reveal-l d3">
                     <div class="gn">1</div>
-                    <p>Open <code>chrome://extensions</code></p>
+                    <p>Click <strong>Add to Chrome</strong> on the Web Store</p>
                 </div>
                 <div class="gstep reveal-l d4">
                     <div class="gn">2</div>
-                    <p>Enable <strong>Developer mode</strong></p>
+                    <p>Pin extension to toolbar</p>
                 </div>
                 <div class="gstep reveal-l d5">
                     <div class="gn">3</div>
-                    <p>Load unpacked → pick <code>dist/</code></p>
+                    <p>Open <strong>Settings</strong> → choose provider, enter API key</p>
                 </div>
                 <div class="gstep reveal-l d6">
                     <div class="gn">4</div>
-                    <p>Toolbar → <strong>Settings</strong>: provider, base URL, key, model</p>
+                    <p>Start cleaning your bookmarks</p>
                 </div>
             </div>
         </div>
         <div class="gs-right">
-            <div class="terminal reveal d3">
-                <div class="bar">
-                    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-                    <span>bash — clean-bookmarks</span>
-                </div>
-                <div class="body">
-                    <div><span class="p">$</span> <span class="cmd">git clone …/clean-bookmarks.git</span></div>
-                    <div><span class="p">$</span> <span class="cmd">cd clean-bookmarks</span></div>
-                    <div><span class="p">$</span> <span class="cmd">npm install</span></div>
-                    <div><span class="p">$</span> <span class="cmd">npm run build</span></div>
-                    <div><span class="ok">✓ bundled to dist/</span></div>
-                </div>
-            </div>
-            <div class="gs-callout reveal d6">
+            <a class="cta-big reveal d3" href="https://chromewebstore.google.com/detail/akjmeddnbohjephmppkmifnljehfhkpb" target="_blank" rel="noopener">
+                <span class="dl">⬇</span>
+                Add to Chrome
+            </a>
+            <div class="gs-callout reveal d5">
                 <span class="mk">13 + BROWSER AI</span>
                 <span>Anthropic, OpenAI, Google Gemini, Mistral, DeepSeek, Groq, Cerebras, xAI, Together, Fireworks, Moonshot, MiniMax, Z.AI — plus on-device <code>Gemini Nano</code> in Chrome.</span>
             </div>
         </div>
-        <div class="slug">Get started</div>
+        <div class="slug">Install</div>
         <div class="pageno">07</div>
     </section>
 
