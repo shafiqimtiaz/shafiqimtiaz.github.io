@@ -453,16 +453,22 @@ p { font-weight: 500; }
 .cta-big {
     display: flex; align-items: center; justify-content: center; gap: 12px;
     padding: 28px 40px;
-    background: var(--coral); color: #fff;
-    border-radius: 12px;
+    background: var(--primary); color: var(--surface);
+    border: var(--border);
     text-decoration: none;
-    font-weight: 700; font-size: 1.25rem;
-    transition: transform .2s, box-shadow .2s;
+    font-family: var(--font-mono);
+    font-weight: 700; font-size: 32px;
+    transition: transform .12s var(--ease), box-shadow .12s var(--ease), background .12s;
     box-shadow: var(--shadow);
 }
 .cta-big:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: var(--shadow-lg);
+    background: var(--ink);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--ink);
+}
+.cta-big:active {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0 var(--ink);
 }
 .cta-big .dl { font-size: 1.5rem; }
 .terminal {
