@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="l45sMjrS3Q4nHZL3bxf8qJ3msHIETVhNYAII04ZR37w" />
+<title>Fetch Markdown — Turn any web page into clean Markdown</title>
+<link rel="icon" href="icon.png">
+
+<!-- Fonts: Darker Grotesque (display/body) + JetBrains Mono (labels) — Brutalism -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   CSS CUSTOM PROPERTIES (THEME)
+   Brutalism palette + type — matches clean-bookmarks
+   =========================================== */
+:root {
+    /* Colors */
+    --primary:   #DD614C;   /* terracotta */
+    --secondary: #DAA144;   /* gold */
+    --success:   #16A34A;
+    --danger:    #DC2626;
+    --ink:       #141821;   /* near-black navy */
+    --paper:     #F4EEE3;   /* warm concrete background */
+    --surface:   #FFFFFF;   /* card white */
+
+    /* Typography */
+    --font-display: 'Darker Grotesque', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    /* Brutalist signature */
+    --border:  4px solid var(--ink);
+    --shadow:  10px 10px 0 var(--ink);
+    --shadow-sm: 6px 6px 0 var(--ink);
+
+    /* Stage */
+    --stage-bg: #19140f;
+    --slide-bg: var(--paper);
+
+    /* Motion */
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur: 0.6s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   =========================================== */
+html, body {
+    width: 100%; height: 100%;
+    margin: 0; overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-viewport {
+    position: fixed; inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active, .slide.visible {
+    visibility: visible; opacity: 1; pointer-events: auto;
+    z-index: 1;
+}
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+.deck-controls {
+    position: fixed; left: 50%; bottom: 22px;
+    transform: translateX(-50%); z-index: 1000;
+}
+@media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .deck-viewport { position: static; overflow: visible; background: #fff; }
+    .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+    .slide {
+        position: relative; display: block !important;
+        visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        width: 1920px; height: 1080px;
+        break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .deck-controls { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   SLIDE FOUNDATION
+   Concrete grid backdrop + warm paper
+   =========================================== */
+.slide {
+    font-family: var(--font-display);
+    color: var(--ink);
+    padding: 96px 120px;
+    background-color: var(--paper);
+    background-image:
+        linear-gradient(rgba(20,24,33,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20,24,33,0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+}
+
+/* shared kicker label (mono, uppercase) */
+.kicker {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--secondary);
+    display: inline-block;
+    padding: 8px 18px;
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+}
+.kicker.coral { background: var(--primary); color: var(--surface); }
+
+h1, h2 { font-weight: 900; line-height: 0.92; letter-spacing: -0.02em; }
+p { font-weight: 500; }
+
+/* slide page number chrome */
+.pageno {
+    position: absolute;
+    right: 56px; bottom: 48px;
+    font-family: var(--font-mono);
+    font-size: 20px; font-weight: 700;
+    color: var(--ink);
+    opacity: 0.55;
+}
+.slug {
+    position: absolute;
+    left: 120px; bottom: 48px;
+    font-family: var(--font-mono);
+    font-size: 18px; font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink); opacity: 0.45;
+}
+
+/* ===========================================
+   ANIMATIONS — staggered reveal on active slide
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(34px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-l {
+    opacity: 0; transform: translateX(-48px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slide.visible .reveal-l { opacity: 1; transform: translateX(0); }
+
+.slide.visible .d1 { transition-delay: 0.08s; }
+.slide.visible .d2 { transition-delay: 0.18s; }
+.slide.visible .d3 { transition-delay: 0.28s; }
+.slide.visible .d4 { transition-delay: 0.38s; }
+.slide.visible .d5 { transition-delay: 0.48s; }
+.slide.visible .d6 { transition-delay: 0.58s; }
+.slide.visible .d7 { transition-delay: 0.68s; }
+
+/* ===========================================
+   SLIDE 1 — TITLE
+   =========================================== */
+.title-slide { display: flex; align-items: center; gap: 90px; }
+.title-logo {
+    width: 420px; height: 420px;
+    object-fit: contain;
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow);
+    padding: 30px;
+    flex-shrink: 0;
+}
+.title-text { max-width: 980px; }
+.title-text h1 {
+    font-size: 168px;
+    margin-bottom: 8px;
+}
+.title-text .underline {
+    height: 18px; width: 360px;
+    background: var(--primary);
+    border: var(--border);
+    margin: 18px 0 36px;
+}
+.title-text .lede {
+    font-size: 44px; font-weight: 600;
+    line-height: 1.1; max-width: 860px;
+    margin-bottom: 38px;
+}
+.badge-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.badge {
+    font-family: var(--font-mono);
+    font-size: 20px; font-weight: 700;
+    padding: 10px 18px;
+    border: var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+.badge.b1 { background: var(--ink); color: #fff; }
+.badge.b2 { background: var(--secondary); }
+.badge.b3 { background: var(--primary); color: #fff; }
+
+/* ===========================================
+   SLIDE 2 — STATEMENT (Overview)
+   =========================================== */
+.statement { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+.statement .big {
+    font-size: 116px; line-height: 1.42;
+    max-width: 1620px; margin-top: 28px;
+}
+.statement .big em {
+    font-style: normal;
+    background: var(--primary); color: var(--surface);
+    padding: 2px 14px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+.statement .big .gold {
+    background: var(--secondary); color: var(--ink);
+    padding: 2px 14px;
+    box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.statement .sub {
+    font-size: 36px; font-weight: 500;
+    max-width: 1380px; margin-top: 44px;
+    line-height: 1.25;
+}
+.statement .sub strong { font-weight: 800; }
+
+/* ===========================================
+   SLIDE 3 — FEATURE GRID (4x2 — 8 features)
+   =========================================== */
+.head-row { display: flex; align-items: center; gap: 28px; margin-bottom: 40px; }
+.head-row h2 { font-size: 88px; }
+
+.feat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+.feat {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 24px 24px;
+    display: flex; gap: 18px; align-items: flex-start;
+    min-height: 280px;
+}
+.feat .num {
+    font-family: var(--font-mono);
+    font-size: 26px; font-weight: 700;
+    line-height: 1;
+    color: var(--surface);
+    background: var(--ink);
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    border: var(--border);
+    flex-shrink: 0;
+}
+.feat:nth-child(1) .num { background: var(--primary); }
+.feat:nth-child(2) .num { background: var(--secondary); color: var(--ink); }
+.feat:nth-child(3) .num { background: var(--ink); }
+.feat:nth-child(4) .num { background: var(--primary); }
+.feat:nth-child(5) .num { background: var(--secondary); color: var(--ink); }
+.feat:nth-child(6) .num { background: var(--ink); }
+.feat:nth-child(7) .num { background: var(--primary); }
+.feat:nth-child(8) .num { background: var(--secondary); color: var(--ink); }
+.feat h3 { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+.feat p { font-size: 20px; font-weight: 500; line-height: 1.18; color: #3a3f49; }
+
+/* ===========================================
+   SLIDE 4 — HOW IT WORKS (architecture)
+   =========================================== */
+.arch { display: flex; flex-direction: column; height: 100%; }
+.arch-flow {
+    display: flex; align-items: stretch; gap: 0;
+    margin-top: 30px;
+}
+.node {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 34px 30px;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 12px;
+}
+.node .tag {
+    font-family: var(--font-mono);
+    font-size: 18px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--primary);
+}
+.node h3 { font-size: 40px; font-weight: 800; line-height: 0.98; }
+.node p { font-size: 22px; font-weight: 500; line-height: 1.18; color: #3a3f49; }
+.node.dark { background: var(--ink); }
+.node.dark h3, .node.dark p { color: var(--surface); }
+.node.dark .tag { color: var(--secondary); }
+.arrow {
+    align-self: center;
+    font-family: var(--font-mono);
+    font-size: 64px; font-weight: 700;
+    padding: 0 22px;
+    color: var(--ink);
+}
+.arch-note {
+    margin-top: 48px;
+    background: var(--secondary);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 30px 38px;
+    font-size: 30px; font-weight: 600; line-height: 1.2;
+    display: flex; align-items: center; gap: 22px;
+}
+.arch-note .mk {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--ink); color: var(--surface);
+    padding: 6px 14px; font-size: 22px; flex-shrink: 0;
+}
+
+/* ===========================================
+   SLIDE 5 — PIPELINE STEPS
+   =========================================== */
+.pipe-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+    margin-top: 38px;
+}
+.step {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 26px 24px;
+    position: relative;
+    min-height: 230px;
+}
+.step .sn {
+    font-family: var(--font-mono);
+    font-size: 24px; font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 12px;
+}
+.step h3 { font-size: 34px; font-weight: 800; line-height: 0.98; margin-bottom: 10px; }
+.step p { font-size: 21px; font-weight: 500; line-height: 1.18; color: #3a3f49; }
+.step.accent { background: var(--ink); }
+.step.accent .sn { color: var(--secondary); }
+.step.accent h3, .step.accent p { color: var(--surface); }
+.step.gold { background: var(--secondary); }
+.step.gold .sn { color: var(--ink); }
+
+/* ===========================================
+   SLIDE 6 — SITE TYPES (chips layout)
+   =========================================== */
+.sites { display: flex; flex-direction: column; height: 100%; }
+.sites-intro {
+    font-size: 32px; font-weight: 500; line-height: 1.3;
+    max-width: 1480px; margin-top: 22px;
+}
+.sites-intro strong { font-weight: 800; }
+.chip-wrap {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    margin-top: 44px;
+}
+.chip {
+    font-family: var(--font-mono);
+    font-size: 22px; font-weight: 700;
+    padding: 12px 22px;
+    border: var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--ink);
+}
+.chip.dark { background: var(--ink); color: var(--surface); }
+.chip.coral { background: var(--primary); color: var(--surface); }
+.chip.gold { background: var(--secondary); }
+.sites-note {
+    margin-top: auto;
+    background: var(--ink);
+    color: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 26px 36px;
+    font-size: 28px; font-weight: 600; line-height: 1.2;
+    display: flex; align-items: center; gap: 22px;
+}
+.sites-note .mk {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--secondary); color: var(--ink);
+    padding: 6px 14px; font-size: 20px; flex-shrink: 0;
+}
+
+/* ===========================================
+   SLIDE 7 — PRIVACY
+   =========================================== */
+.privacy { display: flex; gap: 80px; height: 100%; align-items: center; }
+.privacy-left { flex: 1.1; }
+.privacy-left h2 { font-size: 120px; line-height: 0.9; }
+.privacy-left .hl { color: var(--primary); }
+.privacy-left p {
+    font-size: 34px; font-weight: 500; line-height: 1.25;
+    margin-top: 36px; max-width: 720px; color: #2a2e36;
+}
+.privacy-right {
+    flex: 0.9;
+    display: flex; flex-direction: column; gap: 24px;
+}
+.pcard {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 28px 34px;
+}
+.pcard .pt {
+    font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--primary); margin-bottom: 8px;
+}
+.pcard .pd { font-size: 30px; font-weight: 600; line-height: 1.12; }
+.pcard:nth-child(even) .pt { color: var(--secondary); }
+
+/* ===========================================
+   SLIDE 8 — INSTALL
+   =========================================== */
+.gs { display: flex; gap: 70px; height: 100%; align-items: center; }
+.gs-left { flex: 1; }
+.gs-left h2 { font-size: 108px; line-height: 0.9; margin-bottom: 40px; }
+.gs-steps { display: flex; flex-direction: column; gap: 24px; }
+.gstep {
+    display: flex; align-items: center; gap: 26px;
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 24px 30px;
+}
+.gstep .gn {
+    font-family: var(--font-mono); font-size: 34px; font-weight: 700;
+    color: var(--surface); background: var(--ink);
+    width: 64px; height: 64px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: var(--border);
+}
+.gstep:nth-child(1) .gn { background: var(--primary); }
+.gstep:nth-child(2) .gn { background: var(--secondary); color: var(--ink); }
+.gstep p { font-size: 30px; font-weight: 600; line-height: 1.1; }
+.gstep code {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--paper); padding: 2px 8px; font-size: 24px;
+    border: 2px solid var(--ink);
+}
+.gs-right { flex: 0.85; display: flex; flex-direction: column; gap: 22px; }
+.gs-callout {
+    background: var(--secondary);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 22px 26px;
+    font-size: 22px; font-weight: 600; line-height: 1.2;
+    display: flex; align-items: center; gap: 16px;
+}
+.gs-callout .mk {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--ink); color: var(--surface);
+    padding: 6px 12px; font-size: 17px; flex-shrink: 0;
+    letter-spacing: 0.06em;
+}
+.gs-callout code {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--paper); padding: 1px 6px; font-size: 18px;
+    border: 2px solid var(--ink);
+}
+.cta-big {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    padding: 28px 40px;
+    background: var(--primary); color: var(--surface);
+    border: var(--border);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-weight: 700; font-size: 32px;
+    transition: transform .12s var(--ease), box-shadow .12s var(--ease), background .12s;
+    box-shadow: var(--shadow);
+}
+.cta-big:hover {
+    background: var(--ink);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--ink);
+}
+.cta-big:active {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0 var(--ink);
+}
+.cta-big .dl { font-size: 1.5rem; }
+.terminal {
+    background: var(--ink);
+    border: var(--border);
+    box-shadow: var(--shadow);
+}
+.terminal .bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 22px;
+    border-bottom: 3px solid #2c3340;
+}
+.terminal .dot { width: 18px; height: 18px; border-radius: 50%; }
+.terminal .dot.r { background: var(--danger); }
+.terminal .dot.y { background: var(--secondary); }
+.terminal .dot.g { background: var(--success); }
+.terminal .bar span {
+    font-family: var(--font-mono); font-size: 18px; font-weight: 500;
+    color: #8b94a3; margin-left: 12px; letter-spacing: 0.08em;
+}
+.terminal .body {
+    padding: 30px 36px;
+    font-family: var(--font-mono); font-size: 25px; font-weight: 500;
+    line-height: 1.65;
+}
+.terminal .body .c { color: #6b7686; }
+.terminal .body .p { color: var(--primary); }
+.terminal .body .cmd { color: #f4eee3; }
+.terminal .body .ok { color: var(--success); }
+
+/* ===========================================
+   SLIDE 9 — TECH STACK
+   =========================================== */
+.stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 54px;
+}
+.tcell {
+    background: var(--surface);
+    border: var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 34px 36px;
+}
+.tcell .layer {
+    font-family: var(--font-mono); font-size: 20px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--primary); margin-bottom: 14px;
+}
+.tcell .tech { font-size: 46px; font-weight: 800; line-height: 0.98; }
+.tcell .meta { font-size: 24px; font-weight: 500; color: #3a3f49; margin-top: 8px; line-height: 1.15; }
+.tcell:nth-child(2) .layer, .tcell:nth-child(5) .layer { color: var(--secondary); }
+.tcell.fill { background: var(--ink); }
+.tcell.fill .tech { color: var(--surface); }
+.tcell.fill .meta { color: #aab2c0; }
+.tcell.fill .layer { color: var(--secondary); }
+
+/* ===========================================
+   SLIDE 10 — CLOSING
+   =========================================== */
+.closing {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; height: 100%; gap: 30px;
+}
+.closing img {
+    width: 300px; height: 300px; object-fit: contain;
+    background: var(--surface); border: var(--border);
+    box-shadow: var(--shadow); padding: 24px;
+}
+.closing h2 { font-size: 130px; }
+.closing .repo {
+    font-family: var(--font-mono); font-size: 38px; font-weight: 700;
+    background: var(--ink); color: var(--surface);
+    padding: 18px 36px; border: var(--border); box-shadow: var(--shadow-sm);
+    margin-top: 6px;
+    text-decoration: none; cursor: pointer; display: inline-block;
+    transition: transform 0.12s var(--ease), box-shadow 0.12s var(--ease), background 0.12s;
+}
+.closing .repo:hover {
+    background: var(--primary);
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 var(--ink);
+}
+.closing .repo:active {
+    transform: translate(2px, 2px);
+    box-shadow: 3px 3px 0 var(--ink);
+}
+.closing .tagline { font-size: 40px; font-weight: 600; }
+
+/* ===========================================
+   NAV CHROME
+   =========================================== */
+.deck-controls {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--font-mono);
+}
+.deck-controls button {
+    width: 46px; height: 46px;
+    border: 3px solid var(--paper);
+    background: var(--ink); color: var(--paper);
+    font-size: 22px; font-weight: 700; cursor: pointer;
+    transition: background 0.15s;
+}
+.deck-controls button:hover { background: var(--primary); }
+.deck-controls .count {
+    color: var(--paper); font-size: 18px; font-weight: 700;
+    letter-spacing: 0.1em; padding: 0 8px;
+}
+.progress-bar {
+    position: fixed; top: 0; left: 0; height: 6px;
+    background: var(--primary); z-index: 1000;
+    transition: width 0.4s var(--ease);
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+    <!-- === SLIDE 1: TITLE === -->
+    <section class="slide title-slide active">
+        <img class="title-logo reveal d1" src="logo.png" alt="Fetch Markdown logo">
+        <div class="title-text">
+            <h1 class="reveal d2">Fetch<br>Markdown</h1>
+            <div class="underline reveal d3"></div>
+            <p class="lede reveal d4">Turn any web page into clean, structured Markdown with one click.</p>
+            <div class="badge-row reveal d5">
+                <span class="badge b1">Chrome Extension</span>
+                <span class="badge b2">Manifest V3</span>
+                <span class="badge b3">Turndown + GFM</span>
+                <span class="badge">25+ Sites</span>
+                <span class="badge">MIT</span>
+            </div>
+        </div>
+        <div class="slug">github.com/shafiqimtiaz/fetch-markdown</div>
+    </section>
+
+    <!-- === SLIDE 2: OVERVIEW STATEMENT === -->
+    <section class="slide statement">
+        <span class="kicker coral reveal d1">What it does</span>
+        <h1 class="big reveal d2">Right-click any page. Get <em>clean Markdown</em> with <span class="gold">structure intact</span>.</h1>
+        <p class="sub reveal d3">Fetch Markdown doesn't blindly strip HTML. It detects <strong>25+ site types</strong> — GitHub, Wikipedia, Reddit, Stack Overflow, blogs, docs, news — and applies a tailored extraction strategy for each. Code blocks, headings, lists, and links come out exactly as they should. One click, copy, paste.</p>
+        <div class="slug">Overview</div>
+        <div class="pageno">02</div>
+    </section>
+
+    <!-- === SLIDE 3: FEATURES === -->
+    <section class="slide">
+        <div class="head-row">
+            <span class="kicker reveal-l d1">Features</span>
+            <h2 class="reveal-l d1">What you get</h2>
+        </div>
+        <div class="feat-grid">
+            <div class="feat reveal d2">
+                <div class="num">01</div>
+                <div>
+                    <h3>Confidence-scored detection</h3>
+                    <p>25+ candidate site types scored in parallel. Highest score wins, so weak signals combine to identify sites we've never seen.</p>
+                </div>
+            </div>
+            <div class="feat reveal d2">
+                <div class="num">02</div>
+                <div>
+                    <h3>Right-click anywhere</h3>
+                    <p>Convert the full page, a text selection, a link, or an image. Every context covered, no hunting for the toolbar button.</p>
+                </div>
+            </div>
+            <div class="feat reveal d3">
+                <div class="num">03</div>
+                <div>
+                    <h3>Keyboard shortcuts</h3>
+                    <p>Ctrl/Cmd + Shift + M for the page. Ctrl/Cmd + Shift + S for the selection. Customizable at chrome://extensions/shortcuts.</p>
+                </div>
+            </div>
+            <div class="feat reveal d3">
+                <div class="num">04</div>
+                <div>
+                    <h3>Rich popup with preview</h3>
+                    <p>One click converts. Live stats (chars, words, lines, headings). Rendered preview, copy, or download as .md — all in one place.</p>
+                </div>
+            </div>
+            <div class="feat reveal d4">
+                <div class="num">05</div>
+                <div>
+                    <h3>Code-aware output</h3>
+                    <p>Fenced blocks and inline code are split out before cleanup, left untouched, then reassembled. Your code comes out exactly as it was.</p>
+                </div>
+            </div>
+            <div class="feat reveal d4">
+                <div class="num">06</div>
+                <div>
+                    <h3>YAML front matter</h3>
+                    <p>Optionally prepend title, URL, date, author, and more. Built-in template or your own — placeholders like {title}, {site_type}, {keywords}.</p>
+                </div>
+            </div>
+            <div class="feat reveal d5">
+                <div class="num">07</div>
+                <div>
+                    <h3>Conversion history</h3>
+                    <p>The last 50 conversions saved locally. Quick copy or download per entry — no re-converting pages you already pulled.</p>
+                </div>
+            </div>
+            <div class="feat reveal d5">
+                <div class="num">08</div>
+                <div>
+                    <h3>Privacy-first</h3>
+                    <p>No network calls. No telemetry. No account. The page never leaves your browser — only Turndown runs in the content script.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slug">Features</div>
+        <div class="pageno">03</div>
+    </section>
+
+    <!-- === SLIDE 4: HOW IT WORKS / ARCHITECTURE === -->
+    <section class="slide arch">
+        <div class="head-row">
+            <span class="kicker coral reveal-l d1">How it works</span>
+            <h2 class="reveal-l d1">Detect, extract, convert</h2>
+        </div>
+        <div class="arch-flow">
+            <div class="node reveal d2">
+                <span class="tag">Trigger</span>
+                <h3>User action</h3>
+                <p>Popup, context menu, or keyboard shortcut.</p>
+            </div>
+            <div class="arrow reveal d3">→</div>
+            <div class="node dark reveal d3">
+                <span class="tag">Content script</span>
+                <h3>Site detection</h3>
+                <p>25+ candidates scored in parallel. Best match wins.</p>
+            </div>
+            <div class="arrow reveal d4">→</div>
+            <div class="node reveal d4">
+                <span class="tag">DOM walker</span>
+                <h3>Extract</h3>
+                <p>Site-specific selectors, then Readability-style fallback.</p>
+            </div>
+            <div class="arrow reveal d5">→</div>
+            <div class="node dark reveal d5">
+                <span class="tag">Turndown</span>
+                <h3>Convert</h3>
+                <p>HTML to Markdown with GFM rules and custom handlers.</p>
+            </div>
+            <div class="arrow reveal d6">→</div>
+            <div class="node reveal d6">
+                <span class="tag">Output</span>
+                <h3>Popup</h3>
+                <p>Preview, copy, or download as .md.</p>
+            </div>
+        </div>
+        <div class="arch-note reveal d7">
+            <span class="mk">FALLBACK</span>
+            <span>No site-specific match? A density scorer walks the DOM and picks the densest content node — the same approach Mozilla Readability uses.</span>
+        </div>
+        <div class="slug">Architecture</div>
+        <div class="pageno">04</div>
+    </section>
+
+    <!-- === SLIDE 5: PIPELINE === -->
+    <section class="slide">
+        <div class="head-row">
+            <span class="kicker reveal-l d1">Pipeline</span>
+            <h2 class="reveal-l d1">Page in, Markdown out</h2>
+        </div>
+        <div class="pipe-grid">
+            <div class="step reveal d2">
+                <div class="sn">01</div>
+                <h3>Trigger</h3>
+                <p>Popup, context menu, or Ctrl+Shift+M / Ctrl+Shift+S.</p>
+            </div>
+            <div class="step reveal d2">
+                <div class="sn">02</div>
+                <h3>Build context</h3>
+                <p>Host, URL, meta tags, and DOM probes gathered once.</p>
+            </div>
+            <div class="step accent reveal d3">
+                <div class="sn">03</div>
+                <h3>Score 25+ sites</h3>
+                <p>Parallel scoring. Highest confidence wins. Low confidence falls through.</p>
+            </div>
+            <div class="step gold reveal d3">
+                <div class="sn">04</div>
+                <h3>Extract</h3>
+                <p>Site-specific selectors. Generic fallback uses density scoring.</p>
+            </div>
+            <div class="step reveal d4">
+                <div class="sn">05</div>
+                <h3>Clean DOM</h3>
+                <p>Strip nav, ads, cookie banners, modals. Unwrap lazy-load images.</p>
+            </div>
+            <div class="step reveal d4">
+                <div class="sn">06</div>
+                <h3>Site transforms</h3>
+                <p>Wikipedia infoboxes to defs. GitHub tasks to [x] syntax. More.</p>
+            </div>
+            <div class="step accent reveal d5">
+                <div class="sn">07</div>
+                <h3>Turndown</h3>
+                <p>HTML to Markdown with GFM. Custom rules for kbd, mark, sub, sup, abbr, details, figure.</p>
+            </div>
+            <div class="step reveal d5">
+                <div class="sn">08</div>
+                <h3>Code-aware cleanup</h3>
+                <p>Split out code, clean the rest, reassemble. Punctuation and headings fixed only in prose.</p>
+            </div>
+        </div>
+        <div class="slug">Pipeline</div>
+        <div class="pageno">05</div>
+    </section>
+
+    <!-- === SLIDE 6: DETECTED SITES === -->
+    <section class="slide sites">
+        <div class="head-row">
+            <span class="kicker reveal-l d1">Site detection</span>
+            <h2 class="reveal-l d1">25+ types, one extension</h2>
+        </div>
+        <p class="sites-intro reveal-l d2">Each site type gets its own extraction strategy. Wikipedia infoboxes become definition lists. GitHub issues keep the task list syntax. Discourse threads get clean quoted blocks. <strong>Wrong site type, wrong output</strong> — so we get it right.</p>
+        <div class="chip-wrap reveal d3">
+            <span class="chip dark">GitHub</span>
+            <span class="chip dark">GitLab</span>
+            <span class="chip dark">Bitbucket</span>
+            <span class="chip coral">Stack Overflow</span>
+            <span class="chip coral">Reddit</span>
+            <span class="chip dark">Twitter / X</span>
+            <span class="chip dark">LinkedIn</span>
+            <span class="chip coral">YouTube</span>
+            <span class="chip gold">Wikipedia</span>
+            <span class="chip dark">Notion</span>
+            <span class="chip dark">Confluence</span>
+            <span class="chip gold">Discourse</span>
+            <span class="chip coral">Hacker News</span>
+            <span class="chip">Blog</span>
+            <span class="chip">News</span>
+            <span class="chip">Documentation</span>
+            <span class="chip">Product Page</span>
+            <span class="chip">Academic</span>
+            <span class="chip">Forum</span>
+            <span class="chip">Webmail</span>
+            <span class="chip dark">ChatGPT</span>
+            <span class="chip dark">Claude</span>
+            <span class="chip gold">Generic</span>
+        </div>
+        <div class="sites-note reveal d4">
+            <span class="mk">UNSEEN SITES</span>
+            <span>Never seen the site before? Multiple weak signals combine to identify it correctly. If nothing scores, the Readability-style density scorer walks the DOM and picks the densest content.</span>
+        </div>
+        <div class="slug">Site detection</div>
+        <div class="pageno">06</div>
+    </section>
+
+    <!-- === SLIDE 7: PRIVACY === -->
+    <section class="slide privacy">
+        <div class="privacy-left">
+            <span class="kicker coral reveal-l d1">Privacy</span>
+            <h2 class="reveal-l d2">No backend.<br>No account.<br><span class="hl">No data store.</span></h2>
+            <p class="reveal-l d3">The page never leaves your browser. Turndown runs in the content script. Your conversion history lives in chrome.storage.local. Nothing is sent anywhere.</p>
+        </div>
+        <div class="privacy-right">
+            <div class="pcard reveal d3">
+                <div class="pt">Local-only execution</div>
+                <div class="pd">All conversion runs in your browser. No API, no proxy.</div>
+            </div>
+            <div class="pcard reveal d4">
+                <div class="pt">No telemetry</div>
+                <div class="pd">No analytics. No usage tracking. No "phone home".</div>
+            </div>
+            <div class="pcard reveal d5">
+                <div class="pt">Minimal permissions</div>
+                <div class="pd">activeTab, scripting, clipboard, contextMenus, storage, notifications.</div>
+            </div>
+            <div class="pcard reveal d6">
+                <div class="pt">Your history</div>
+                <div class="pd">Last 50 conversions in chrome.storage.local. Stays on your device.</div>
+            </div>
+        </div>
+        <div class="slug">Privacy</div>
+        <div class="pageno">07</div>
+    </section>
+
+    <!-- === SLIDE 8: INSTALL === -->
+    <section class="slide gs">
+        <div class="gs-left">
+            <span class="kicker reveal-l d1">Install</span>
+            <h2 class="reveal-l d2">Load unpacked</h2>
+            <div class="gs-steps">
+                <div class="gstep reveal-l d3">
+                    <div class="gn">1</div>
+                    <p>Open <code>chrome://extensions</code> in Chrome</p>
+                </div>
+                <div class="gstep reveal-l d4">
+                    <div class="gn">2</div>
+                    <p>Enable <strong>Developer mode</strong> (top right)</p>
+                </div>
+                <div class="gstep reveal-l d5">
+                    <div class="gn">3</div>
+                    <p>Click <strong>Load unpacked</strong>, select the <code>fetch-markdown</code> directory</p>
+                </div>
+                <div class="gstep reveal-l d6">
+                    <div class="gn">4</div>
+                    <p>Pin to toolbar. Right-click any page. Done.</p>
+                </div>
+            </div>
+        </div>
+        <div class="gs-right">
+            <a class="cta-big reveal d3" href="https://github.com/shafiqimtiaz/fetch-markdown" target="_blank" rel="noopener">
+                <span class="dl">★</span>
+                Star on GitHub
+            </a>
+            <div class="terminal reveal d4">
+                <div class="bar">
+                    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                    <span>~ / fetch-markdown</span>
+                </div>
+                <div class="body">
+                    <span class="c"># Optional: package for sharing</span><br>
+                    <span class="p">$</span> <span class="cmd">npm install</span><br>
+                    <span class="p">$</span> <span class="cmd">npm run zip</span><br>
+                    <span class="c">→ dist/fetch-markdown-v4.0.0.zip</span><br>
+                    <span class="ok">✓ packaged</span>
+                </div>
+            </div>
+            <div class="gs-callout reveal d5">
+                <span class="mk">WEB STORE</span>
+                <span>Packaged distribution via the Chrome Web Store is planned. Track <code>shafiqimtiaz/fetch-markdown</code> for the release.</span>
+            </div>
+        </div>
+        <div class="slug">Install</div>
+        <div class="pageno">08</div>
+    </section>
+
+    <!-- === SLIDE 9: TECH STACK === -->
+    <section class="slide">
+        <div class="head-row">
+            <span class="kicker coral reveal-l d1">Tech stack</span>
+            <h2 class="reveal-l d1">Under the hood</h2>
+        </div>
+        <div class="stack-grid">
+            <div class="tcell reveal d2">
+                <div class="layer">HTML → Markdown</div>
+                <div class="tech">Turndown</div>
+                <div class="meta">+ turndown-plugin-gfm for tables, strikethrough, task lists</div>
+            </div>
+            <div class="tcell fill reveal d2">
+                <div class="layer">Markdown preview</div>
+                <div class="tech">Marked</div>
+                <div class="meta">Live rendering in the popup editor</div>
+            </div>
+            <div class="tcell reveal d3">
+                <div class="layer">Platform</div>
+                <div class="tech">Chrome MV3</div>
+                <div class="meta">Manifest V3 · Service worker</div>
+            </div>
+            <div class="tcell reveal d3">
+                <div class="layer">Storage</div>
+                <div class="tech">chrome.storage</div>
+                <div class="meta">Settings + last 50 conversions</div>
+            </div>
+            <div class="tcell fill reveal d4">
+                <div class="layer">Detection</div>
+                <div class="tech">Parallel scoring</div>
+                <div class="meta">25+ candidates · Mozilla-style density fallback</div>
+            </div>
+            <div class="tcell reveal d4">
+                <div class="layer">Typography</div>
+                <div class="tech">Darker Grotesque + JetBrains Mono</div>
+                <div class="meta">Popup UI fonts</div>
+            </div>
+        </div>
+        <div class="slug">Tech stack</div>
+        <div class="pageno">09</div>
+    </section>
+
+    <!-- === SLIDE 10: CLOSING === -->
+    <section class="slide closing">
+        <img class="reveal d1" src="logo.png" alt="Fetch Markdown logo">
+        <h2 class="reveal d2">Fetch Markdown.</h2>
+        <p class="tagline reveal d3">25+ sites · Code-aware · Privacy-first · Zero dependencies</p>
+        <div class="badge-row reveal d4" style="justify-content:center; margin-top: 12px;">
+            <a class="badge b1" href="https://github.com/shafiqimtiaz/fetch-markdown" target="_blank" rel="noopener" style="text-decoration:none;color:#fff;cursor:pointer;">★ Star on GitHub</a>
+            <a class="badge" href="https://github.com/shafiqimtiaz/fetch-markdown/issues" target="_blank" rel="noopener" style="text-decoration:none;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:8px;">
+                <svg width="22" height="22" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                Source
+            </a>
+        </div>
+        <div class="pageno">10</div>
+    </section>
+
+</main>
+</div>
+
+<!-- Nav chrome -->
+<div class="deck-controls">
+    <button id="prevBtn" aria-label="Previous slide">‹</button>
+    <span class="count" id="counter">01 / 10</span>
+    <button id="nextBtn" aria-label="Next slide">›</button>
+</div>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   Fixed 16:9 stage, keyboard / touch / wheel nav
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.current = 0;
+        this.stage = document.getElementById('deckStage');
+        this.bar = document.getElementById('progressBar');
+        this.counter = document.getElementById('counter');
+        this.setupScale();
+        this.setupKeyboard();
+        this.setupTouch();
+        this.setupWheel();
+        document.getElementById('nextBtn').addEventListener('click', () => this.go(this.current + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => this.go(this.current - 1));
+        this.show(0);
+    }
+
+    /* Scale the whole 1920×1080 stage to fit the viewport (letterbox) */
+    setupScale() {
+        const scale = () => {
+            const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * f) / 2;
+            const y = (window.innerHeight - 1080 * f) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+
+    setupKeyboard() {
+        document.addEventListener('keydown', (e) => {
+            if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); this.go(this.current + 1); }
+            if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); this.go(this.current - 1); }
+            if (e.key === 'Home') this.go(0);
+            if (e.key === 'End') this.go(this.slides.length - 1);
+        });
+    }
+
+    setupTouch() {
+        let sx = 0, sy = 0;
+        document.addEventListener('touchstart', (e) => { sx = e.changedTouches[0].clientX; sy = e.changedTouches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - sx;
+            const dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) this.go(this.current + (dx < 0 ? 1 : -1));
+        }, { passive: true });
+    }
+
+    setupWheel() {
+        let lock = false;
+        window.addEventListener('wheel', (e) => {
+            if (lock) return;
+            if (Math.abs(e.deltaY) < 30) return;
+            lock = true;
+            this.go(this.current + (e.deltaY > 0 ? 1 : -1));
+            setTimeout(() => { lock = false; }, 700);
+        }, { passive: true });
+    }
+
+    go(i) { this.show(Math.max(0, Math.min(i, this.slides.length - 1))); }
+
+    show(i) {
+        this.current = i;
+        this.slides.forEach((s, idx) => {
+            s.classList.toggle('active', idx === i);
+            s.classList.toggle('visible', idx === i);
+        });
+        const pad = (n) => String(n).padStart(2, '0');
+        this.counter.textContent = `${pad(i + 1)} / ${pad(this.slides.length)}`;
+        this.bar.style.width = ((i + 1) / this.slides.length * 100) + '%';
+    }
+}
+
+new SlidePresentation();
+</script>
+</body>
+</html>
