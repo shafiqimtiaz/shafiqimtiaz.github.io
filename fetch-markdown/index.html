@@ -447,29 +447,7 @@ p { font-weight: 500; }
 .gs { display: flex; gap: 70px; height: 100%; align-items: center; }
 .gs-left { flex: 1; }
 .gs-left h2 { font-size: 108px; line-height: 0.9; margin-bottom: 40px; }
-.gs-steps { display: flex; flex-direction: column; gap: 24px; }
-.gstep {
-    display: flex; align-items: center; gap: 26px;
-    background: var(--surface);
-    border: var(--border);
-    box-shadow: var(--shadow-sm);
-    padding: 24px 30px;
-}
-.gstep .gn {
-    font-family: var(--font-mono); font-size: 34px; font-weight: 700;
-    color: var(--surface); background: var(--ink);
-    width: 64px; height: 64px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    border: var(--border);
-}
-.gstep:nth-child(1) .gn { background: var(--primary); }
-.gstep:nth-child(2) .gn { background: var(--secondary); color: var(--ink); }
-.gstep p { font-size: 30px; font-weight: 600; line-height: 1.1; }
-.gstep code {
-    font-family: var(--font-mono); font-weight: 700;
-    background: var(--paper); padding: 2px 8px; font-size: 24px;
-    border: 2px solid var(--ink);
-}
+.gs-left p { font-size: 30px; font-weight: 600; line-height: 1.2; max-width: 26ch; }
 .gs-right { flex: 0.85; display: flex; flex-direction: column; gap: 22px; }
 .gs-callout {
     background: var(--secondary);
@@ -896,30 +874,13 @@ p { font-weight: 500; }
     <section class="slide gs">
         <div class="gs-left">
             <span class="kicker reveal-l d1">Install</span>
-            <h2 class="reveal-l d2">Load unpacked</h2>
-            <div class="gs-steps">
-                <div class="gstep reveal-l d3">
-                    <div class="gn">1</div>
-                    <p>Open <code>chrome://extensions</code> in Chrome</p>
-                </div>
-                <div class="gstep reveal-l d4">
-                    <div class="gn">2</div>
-                    <p>Enable <strong>Developer mode</strong> (top right)</p>
-                </div>
-                <div class="gstep reveal-l d5">
-                    <div class="gn">3</div>
-                    <p>Click <strong>Load unpacked</strong>, select the <code>fetch-markdown</code> directory</p>
-                </div>
-                <div class="gstep reveal-l d6">
-                    <div class="gn">4</div>
-                    <p>Pin to toolbar. Right-click any page. Done.</p>
-                </div>
-            </div>
+            <h2 class="reveal-l d2">One click away</h2>
+            <p class="reveal-l d3">Live on the Chrome Web Store. Add it, pin it, convert any page to Markdown.</p>
         </div>
         <div class="gs-right">
-            <a class="cta-big reveal d3" href="https://github.com/shafiqimtiaz/fetch-markdown" target="_blank" rel="noopener">
-                <span class="dl">★</span>
-                Star on GitHub
+            <a class="cta-big reveal d3" href="https://chromewebstore.google.com/detail/akijdplhjdijpcjkgkhhnlhhjopldoml" target="_blank" rel="noopener">
+                <span class="dl">+</span>
+                Add to Chrome
             </a>
             <div class="terminal reveal d4">
                 <div class="bar">
@@ -927,7 +888,7 @@ p { font-weight: 500; }
                     <span>~ / fetch-markdown</span>
                 </div>
                 <div class="body">
-                    <span class="c"># Optional: package for sharing</span><br>
+                    <span class="c"># Developers: build from source</span><br>
                     <span class="p">$</span> <span class="cmd">npm install</span><br>
                     <span class="p">$</span> <span class="cmd">npm run zip</span><br>
                     <span class="c">→ dist/fetch-markdown-v4.0.0.zip</span><br>
@@ -935,8 +896,8 @@ p { font-weight: 500; }
                 </div>
             </div>
             <div class="gs-callout reveal d5">
-                <span class="mk">WEB STORE</span>
-                <span>Packaged distribution via the Chrome Web Store is planned. Track <code>shafiqimtiaz/fetch-markdown</code> for the release.</span>
+                <span class="mk">OPEN SOURCE</span>
+                <span>MIT-licensed. Star, fork, or file issues on <code>shafiqimtiaz/fetch-markdown</code>.</span>
             </div>
         </div>
         <div class="slug">Install</div>
@@ -991,7 +952,7 @@ p { font-weight: 500; }
         <h2 class="reveal d2">Fetch Markdown.</h2>
         <p class="tagline reveal d3">25+ sites · Code-aware · Privacy-first · Zero dependencies</p>
         <div class="badge-row reveal d4" style="justify-content:center; margin-top: 12px;">
-            <a class="badge b1" href="https://github.com/shafiqimtiaz/fetch-markdown" target="_blank" rel="noopener" style="text-decoration:none;color:#fff;cursor:pointer;">★ Star on GitHub</a>
+            <a class="badge b1" href="https://chromewebstore.google.com/detail/akijdplhjdijpcjkgkhhnlhhjopldoml" target="_blank" rel="noopener" style="text-decoration:none;color:#fff;cursor:pointer;">+ Add to Chrome</a>
             <a class="badge" href="https://github.com/shafiqimtiaz/fetch-markdown/issues" target="_blank" rel="noopener" style="text-decoration:none;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:8px;">
                 <svg width="22" height="22" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
                 Source
