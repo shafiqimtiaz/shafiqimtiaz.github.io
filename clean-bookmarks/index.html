@@ -618,8 +618,162 @@ p { font-weight: 500; }
     transition: width 0.4s var(--ease);
 }
 </style>
+<style id="redesign-style">
+/* CLEAN BOOKMARKS / THE FILING SYSTEM
+   A quiet archive: paper, index marks, and a hard-working green rail. */
+body[data-design="filing-system"] {
+    --archive-green: #2f654b;
+    --primary: #b9e64a;
+    --secondary: #f1c75b;
+    --blue: #9bc8b0;
+    --ink: #13231a;
+    --paper: #e8eee5;
+    --surface: #f7faf2;
+    --line: #aebcad;
+    --font-display: "Darker Grotesque", "Arial Narrow", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --border: 1px solid var(--line);
+    --shadow: 8px 8px 0 rgba(19,35,26,.16);
+    --shadow-sm: 4px 4px 0 rgba(19,35,26,.13);
+    --stage-bg: #0d1711;
+    --slide-bg: var(--paper);
+}
+body[data-design="filing-system"] .deck-stage { background: var(--paper); }
+body[data-design="filing-system"] .slide {
+    isolation: isolate;
+    padding: 92px 118px 86px;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image:
+        linear-gradient(90deg, transparent 0 84px, rgba(47,101,75,.12) 84px 86px, transparent 86px),
+        linear-gradient(rgba(19,35,26,.055) 1px, transparent 1px);
+    background-size: auto, 100% 38px;
+}
+body[data-design="filing-system"] .slide::before {
+    content: "ARCHIVE // 01";
+    position: absolute; inset: 0 auto 0 0; width: 86px;
+    padding: 92px 0 0 20px; writing-mode: vertical-rl;
+    color: var(--archive-green); font: 700 16px/1 var(--font-mono);
+    letter-spacing: .18em; border-right: 1px solid rgba(47,101,75,.28);
+}
+body[data-design="filing-system"] .slide::after {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(circle at 80% 16%, rgba(185,230,74,.16), transparent 23%),
+                linear-gradient(115deg, transparent 0 72%, rgba(47,101,75,.06) 72% 72.2%, transparent 72.2%);
+}
+body[data-design="filing-system"] h1,
+body[data-design="filing-system"] h2,
+body[data-design="filing-system"] h3 { color: var(--ink); letter-spacing: -.035em; }
+body[data-design="filing-system"] h1,
+body[data-design="filing-system"] h2 { font-weight: 900; }
+body[data-design="filing-system"] p { color: #34453a; }
+body[data-design="filing-system"] .kicker {
+    padding: 8px 12px; border: 1px solid var(--archive-green); border-radius: 0;
+    background: var(--archive-green); color: var(--paper); box-shadow: none;
+    font-size: 16px; letter-spacing: .16em;
+}
+body[data-design="filing-system"] .kicker.coral { background: var(--primary); color: var(--ink); border-color: var(--ink); }
+body[data-design="filing-system"] .kicker::before { content: "//"; color: var(--primary); margin-right: 10px; }
+body[data-design="filing-system"] .head-row { gap: 22px; margin-bottom: 34px; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+body[data-design="filing-system"] .head-row h2 { font-size: 82px; }
+body[data-design="filing-system"] .title-slide { align-items: center; gap: 76px; }
+body[data-design="filing-system"] .title-logo {
+    width: 360px; height: 360px; padding: 28px; border-radius: 0;
+    border: 1px solid var(--ink); background: var(--surface); box-shadow: 16px 16px 0 var(--archive-green);
+}
+body[data-design="filing-system"] .title-text { max-width: 1080px; }
+body[data-design="filing-system"] .title-text h1 { font-size: 166px; line-height: .82; }
+body[data-design="filing-system"] .title-text .underline { width: 260px; height: 6px; margin: 24px 0 30px; border-radius: 0; background: var(--primary); }
+body[data-design="filing-system"] .title-text .lede { max-width: 760px; font-size: 40px; line-height: 1.06; }
+body[data-design="filing-system"] .badge { border-radius: 0; border: 1px solid var(--ink); box-shadow: none; padding: 9px 13px; background: transparent; }
+body[data-design="filing-system"] .badge.b1 { background: var(--ink); color: var(--paper); }
+body[data-design="filing-system"] .badge.b2 { background: var(--primary); }
+body[data-design="filing-system"] .badge.b3 { background: var(--secondary); color: var(--ink); }
+body[data-design="filing-system"] .statement .big { max-width: 1470px; font-size: 116px; line-height: 1.07; }
+body[data-design="filing-system"] .statement .big em { background: var(--primary); color: var(--ink); padding: 1px 10px; }
+body[data-design="filing-system"] .statement .big .gold { background: var(--archive-green); color: var(--paper); padding: 1px 10px; }
+body[data-design="filing-system"] .statement .sub { max-width: 1120px; font-size: 31px; color: #4b5f50; }
+body[data-design="filing-system"] .feat-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+body[data-design="filing-system"] .feat,
+body[data-design="filing-system"] .node,
+body[data-design="filing-system"] .step,
+body[data-design="filing-system"] .pcard,
+body[data-design="filing-system"] .gstep,
+body[data-design="filing-system"] .tcell {
+    border-radius: 0; border: 1px solid var(--line); box-shadow: none; background: rgba(247,250,242,.8);
+}
+body[data-design="filing-system"] .feat { min-height: 260px; padding: 22px; border-top: 4px solid var(--archive-green); }
+body[data-design="filing-system"] .feat:nth-child(3n+1) { border-top-color: var(--primary); }
+body[data-design="filing-system"] .feat:nth-child(3n+2) { border-top-color: var(--secondary); }
+body[data-design="filing-system"] .feat .num { width: 42px; height: 42px; border-radius: 0; border: 0; background: var(--ink); }
+body[data-design="filing-system"] .feat:nth-child(1) .num, body[data-design="filing-system"] .feat:nth-child(4) .num, body[data-design="filing-system"] .feat:nth-child(7) .num { background: var(--primary); color: var(--ink); }
+body[data-design="filing-system"] .feat:nth-child(2) .num, body[data-design="filing-system"] .feat:nth-child(5) .num, body[data-design="filing-system"] .feat:nth-child(8) .num { background: var(--secondary); color: var(--ink); }
+body[data-design="filing-system"] .feat h3 { font-size: 28px; }
+body[data-design="filing-system"] .feat p { font-size: 19px; }
+body[data-design="filing-system"] .arch-flow { margin-top: 26px; }
+body[data-design="filing-system"] .node { padding: 28px 26px; border-top: 4px solid var(--archive-green); }
+body[data-design="filing-system"] .node.dark,
+body[data-design="filing-system"] .step.accent { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+body[data-design="filing-system"] .node.dark h3, body[data-design="filing-system"] .node.dark p,
+body[data-design="filing-system"] .step.accent h3, body[data-design="filing-system"] .step.accent p { color: var(--paper); }
+body[data-design="filing-system"] .node .tag, body[data-design="filing-system"] .step .sn { color: var(--archive-green); }
+body[data-design="filing-system"] .arrow { color: var(--archive-green); font-size: 48px; }
+body[data-design="filing-system"] .arch-note,
+body[data-design="filing-system"] .sites-note,
+body[data-design="filing-system"] .gs-callout { border-radius: 0; box-shadow: none; border: 1px solid var(--ink); background: var(--primary); color: var(--ink); }
+body[data-design="filing-system"] .pipe-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 34px; }
+body[data-design="filing-system"] .step { min-height: 220px; padding: 24px; border-top: 4px solid var(--secondary); }
+body[data-design="filing-system"] .step.gold { background: var(--secondary); border-color: var(--ink); }
+body[data-design="filing-system"] .privacy { gap: 70px; }
+body[data-design="filing-system"] .privacy-left h2 { font-size: 112px; }
+body[data-design="filing-system"] .privacy-left .hl { color: var(--archive-green); }
+body[data-design="filing-system"] .pcard { padding: 24px 28px; border-left: 6px solid var(--archive-green); }
+body[data-design="filing-system"] .pcard:nth-child(even) { border-left-color: var(--primary); }
+body[data-design="filing-system"] .pcard .pt { color: var(--archive-green); font-size: 16px; }
+body[data-design="filing-system"] .pcard .pd { font-size: 27px; }
+body[data-design="filing-system"] .gs-left h2 { font-size: 102px; }
+body[data-design="filing-system"] .gstep { padding: 18px 24px; }
+body[data-design="filing-system"] .gstep .gn { width: 52px; height: 52px; border-radius: 0; border: 0; background: var(--archive-green); }
+body[data-design="filing-system"] .gstep:nth-child(1) .gn { background: var(--primary); color: var(--ink); }
+body[data-design="filing-system"] .gstep:nth-child(2) .gn { background: var(--secondary); color: var(--ink); }
+body[data-design="filing-system"] .cta-big { border-radius: 0; border: 1px solid var(--ink); box-shadow: 8px 8px 0 var(--ink); background: var(--archive-green); color: var(--paper); }
+body[data-design="filing-system"] .stack-grid { gap: 14px; }
+body[data-design="filing-system"] .tcell { padding: 24px; }
+body[data-design="filing-system"] .tcell.fill { background: var(--archive-green); color: var(--paper); border-color: var(--archive-green); }
+body[data-design="filing-system"] .tcell.fill .layer, body[data-design="filing-system"] .tcell.fill .meta { color: #dce9d1; }
+body[data-design="filing-system"] .closing { background: var(--archive-green); color: var(--paper); text-align: center; }
+body[data-design="filing-system"] .closing::before { color: var(--primary); border-color: rgba(232,238,229,.3); }
+body[data-design="filing-system"] .closing h2, body[data-design="filing-system"] .closing p { color: var(--paper); }
+body[data-design="filing-system"] .closing img { width: 180px; height: 180px; filter: none; }
+body[data-design="filing-system"] .slug, body[data-design="filing-system"] .pageno { color: var(--archive-green); opacity: .8; }
+body[data-design="filing-system"] .closing .pageno, body[data-design="filing-system"] .closing .slug { color: var(--primary); }
+body[data-design="filing-system"] .deck-controls { display: flex; align-items: center; gap: 14px; padding: 8px 12px; border: 1px solid var(--primary); background: var(--ink); color: var(--paper); }
+body[data-design="filing-system"] .deck-controls button { border: 0; background: transparent; color: var(--primary); font: 700 24px var(--font-mono); cursor: pointer; }
+body[data-design="filing-system"] .deck-controls button:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
+body[data-design="filing-system"] .deck-controls .count { font: 700 13px var(--font-mono); letter-spacing: .12em; }
+body[data-design="filing-system"] .progress-bar { background: var(--primary); }
+body[data-design="filing-system"] .kicker,
+body[data-design="filing-system"] .title-logo,
+body[data-design="filing-system"] .badge,
+body[data-design="filing-system"] .feat,
+body[data-design="filing-system"] .feat .num,
+body[data-design="filing-system"] .node,
+body[data-design="filing-system"] .step,
+body[data-design="filing-system"] .pcard,
+body[data-design="filing-system"] .gstep,
+body[data-design="filing-system"] .tcell,
+body[data-design="filing-system"] .arch-note,
+body[data-design="filing-system"] .sites-note,
+body[data-design="filing-system"] .gs-callout,
+body[data-design="filing-system"] .cta-big,
+body[data-design="filing-system"] .deck-controls,
+body[data-design="filing-system"] .closing img { border-radius: 12px; }
+body[data-design="filing-system"] .gstep .gn { border-radius: 10px; }
+@media (prefers-reduced-motion: reduce) { body[data-design="filing-system"] .reveal, body[data-design="filing-system"] .reveal-l { transition: none; } }
+@media (prefers-reduced-motion: reduce) { body[data-design="filing-system"] .reveal, body[data-design="filing-system"] .reveal-l { transition: none; } }
+</style>
 </head>
-<body>
+<body data-design="filing-system">
 <div class="progress-bar" id="progressBar"></div>
 <div class="deck-viewport">
 <main class="deck-stage" id="deckStage">
