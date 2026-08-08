@@ -15,23 +15,30 @@
 <style>
 /* ===========================================
    CSS CUSTOM PROPERTIES (THEME)
-   Brutalism palette + type — matches clean-bookmarks
+   Converter-tool aesthetic — mirror of the fetch-markdown popup:
+   warm paper UI + dark markdown editor slab, mono-forward,
+   hard edges, zero drop shadows (precision tool).
    =========================================== */
 :root {
     /* Colors */
-    --primary:   #DD614C;   /* terracotta */
+    --primary:   #DD614C;   /* terracotta — action */
     --secondary: #DAA144;   /* gold */
     --success:   #16A34A;
     --danger:    #DC2626;
-    --ink:       #141821;   /* near-black navy */
+    --ink:       #111827;   /* near-black — hard borders */
     --paper:     #F4EEE3;   /* warm concrete background */
     --surface:   #FFFFFF;   /* card white */
 
-    /* Typography */
+    /* Editor slab — the popup's dark markdown output panel */
+    --editor:    #0D0D0D;
+    --editor-fg: #D4D4D4;
+    --editor-dim:#9AA0A6;
+
+    /* Typography — mono-forward */
     --font-display: 'Darker Grotesque', sans-serif;
     --font-mono:    'JetBrains Mono', monospace;
 
-    /* Brutalist signature */
+    /* Tool signature — hard offset, no softness */
     --border:  4px solid var(--ink);
     --shadow:  10px 10px 0 var(--ink);
     --shadow-sm: 6px 6px 0 var(--ink);
@@ -109,7 +116,7 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
    Concrete grid backdrop + warm paper
    =========================================== */
 .slide {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     color: var(--ink);
     padding: 96px 120px;
     background-color: var(--paper);
@@ -134,8 +141,16 @@ img, video, canvas, svg { max-width: 100%; max-height: 100%; }
     box-shadow: var(--shadow-sm);
 }
 .kicker.coral { background: var(--primary); color: var(--surface); }
+.kicker::before { content: "#"; color: var(--primary); margin-right: 12px; }
+.kicker.coral::before { color: var(--surface); }
 
-h1, h2 { font-weight: 900; line-height: 0.92; letter-spacing: -0.02em; }
+h1, h2 {
+    font-family: var(--font-mono);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+}
 p { font-weight: 500; }
 
 /* slide page number chrome */
@@ -222,6 +237,7 @@ p { font-weight: 500; }
 .badge.b1 { background: var(--ink); color: #fff; }
 .badge.b2 { background: var(--secondary); }
 .badge.b3 { background: var(--primary); color: #fff; }
+.badge { border-width: 3px; }
 
 /* ===========================================
    SLIDE 2 — STATEMENT (Overview)
@@ -490,13 +506,14 @@ p { font-weight: 500; }
 }
 .cta-big .dl { font-size: 1.5rem; }
 .terminal {
-    background: var(--ink);
+    background: var(--editor);
     border: var(--border);
     box-shadow: var(--shadow);
 }
 .terminal .bar {
     display: flex; align-items: center; gap: 12px;
     padding: 16px 22px;
+    background: #12151A;
     border-bottom: 3px solid #2c3340;
 }
 .terminal .dot { width: 18px; height: 18px; border-radius: 50%; }
@@ -511,10 +528,12 @@ p { font-weight: 500; }
     padding: 30px 36px;
     font-family: var(--font-mono); font-size: 25px; font-weight: 500;
     line-height: 1.65;
+    background-image: linear-gradient(rgba(212,212,212,0.045) 1px, transparent 1px);
+    background-size: 100% 52px;
 }
 .terminal .body .c { color: #6b7686; }
 .terminal .body .p { color: var(--primary); }
-.terminal .body .cmd { color: #f4eee3; }
+.terminal .body .cmd { color: #e8e8e8; }
 .terminal .body .ok { color: var(--success); }
 
 /* ===========================================
