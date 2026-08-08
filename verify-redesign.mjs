@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 
 const decks = {
   'clean-bookmarks': { design: 'filing-system', required: ['--archive-green:', 'data-design="filing-system"', 'width: 180px; height: 180px;', 'filter: none;', 'border-radius: 12px;'], content: ['Local-first', 'Bring-your-own-key', 'One-click undo'] },
-  'dash-reader': { design: 'reading-instrument', required: ['--fixation-cyan:', 'data-design="reading-instrument"'], content: ['Dash Reader', 'RSVP', 'Local-first', 'chrome.tts'] },
+  'dash-reader': { design: 'reading-instrument', required: ['--fixation-cyan:', 'data-design="reading-instrument"', 'reader-active.png'], content: ['Dash Reader', 'RSVP', 'Local-first', 'chrome.tts'] },
   'fetch-markdown': { design: 'publication-desk', required: ['--editor-blue:', 'data-design="publication-desk"', 'width: 180px; height: 180px;', 'filter: none;', 'border-radius: 12px;'], content: ['24 site types', 'Markdown', 'No backend'] },
 };
 
