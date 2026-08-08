@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapid Reader — RSVP speed reading for Chrome</title>
+<meta name="description" content="Rapid Reader — RSVP (Rapid Serial Visual Presentation) speed-reading extension for Chrome. Read anything on the web 3× faster.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f1115">
+<link rel="icon" href="icon.png">
+
+<!-- Fonts: Bricolage Grotesque (display) + JetBrains Mono (chrome) — the product's
+     own indigo/amber-on-ink palette, from logo.svg and overlay theme tokens. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   THEME TOKENS — Rapid Reader brand
+   ink #0f1115 · indigo #818cf8 · amber #fbbf24
+   (mirrors the extension's dark overlay theme)
+   =========================================== */
+:root {
+    --ink:      #0f1115;   /* overlay dark bg */
+    --panel:    #161a21;   /* raised surface */
+    --line:     #262c37;   /* border */
+    --text:     #e7e9ee;   /* overlay word color */
+    --dim:      #9ca3af;   /* overlay control color */
+    --indigo:   #818cf8;   /* overlay accent */
+    --indigo-deep: #6366f1;/* logo primary */
+    --amber:    #fbbf24;   /* logo secondary */
+
+    --font-display: 'Bricolage Grotesque', sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
+    --stage-bg: #000;
+    --slide-bg: #000;
+
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --dur: 0.6s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES (viewport-base.css)
+   =========================================== */
+html, body {
+    width: 100%; height: 100%;
+    margin: 0; overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-viewport {
+    position: fixed; inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+.deck-stage {
+    position: absolute; left: 0; top: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+.slide {
+    position: absolute; inset: 0;
+    width: 1920px; height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden; opacity: 0; pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+.slide.active, .slide.visible {
+    visibility: visible; opacity: 1; pointer-events: auto;
+    z-index: 1;
+}
+img, video, canvas, svg { max-width: 100%; max-height: 100%; }
+.deck-controls {
+    position: fixed; left: 50%; bottom: 22px;
+    transform: translateX(-50%); z-index: 1000;
+}
+@media print {
+    html, body { width: 1920px; height: auto; overflow: visible; background: #fff; }
+    .deck-viewport { position: static; overflow: visible; background: #fff; }
+    .deck-stage { position: static; width: auto; height: auto; transform: none !important; background: none; }
+    .slide {
+        position: relative; display: block !important;
+        visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        width: 1920px; height: 1080px;
+        break-after: page; page-break-after: always;
+    }
+    .slide:last-child { break-after: auto; page-break-after: auto; }
+    .deck-controls { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   SLIDE FOUNDATION
+   =========================================== */
+.slide {
+    font-family: var(--font-display);
+    color: var(--text);
+    padding: 110px 130px;
+    background:
+        radial-gradient(1200px 600px at 82% -12%, rgba(129,140,248,0.07), transparent 60%),
+        radial-gradient(900px 500px at -8% 108%, rgba(251,191,36,0.05), transparent 55%),
+        var(--ink);
+}
+.slide::after { /* faint scanline texture */
+    content: "";
+    position: absolute; inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(255,255,255,0.012) 3px 4px);
+}
+
+/* terminal chrome bar */
+.term {
+    position: absolute; top: 46px; left: 130px;
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    font-family: var(--font-mono);
+    font-size: 20px; font-weight: 500; color: var(--dim);
+}
+.term .dot { width: 14px; height: 14px; border-radius: 50%; }
+.term .dot.r { background: #ff5f56; }
+.term .dot.y { background: #ffbd2e; }
+.term .dot.g { background: #27c93f; }
+.term .path { margin-left: 12px; letter-spacing: 0.04em; }
+.term .path b { color: var(--indigo); font-weight: 500; }
+
+/* kicker label */
+.kicker {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 21px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--ink);
+    background: var(--amber);
+    padding: 8px 18px;
+    border: 2px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+}
+.kicker.indigo { background: var(--indigo); color: var(--ink); }
+
+/* head row + slide titles */
+.head-row { display: flex; align-items: center; gap: 30px; margin-bottom: 42px; }
+.head-row h2 { font-size: 84px; font-weight: 700; letter-spacing: -0.02em; line-height: 0.95; }
+
+/* slide chrome: slug + pageno */
+.slug {
+    position: absolute; left: 130px; bottom: 44px;
+    font-family: var(--font-mono);
+    font-size: 18px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--dim); opacity: 0.55;
+}
+.pageno {
+    position: absolute; right: 130px; bottom: 44px;
+    font-family: var(--font-mono);
+    font-size: 20px; font-weight: 700; color: var(--dim); opacity: 0.55;
+}
+
+/* ===========================================
+   ANIMATIONS — staggered reveal on active slide
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(34px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+.reveal-l {
+    opacity: 0; transform: translateX(-48px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.slide.visible .reveal-l { opacity: 1; transform: translateX(0); }
+.slide.visible .d1 { transition-delay: 0.08s; }
+.slide.visible .d2 { transition-delay: 0.18s; }
+.slide.visible .d3 { transition-delay: 0.28s; }
+.slide.visible .d4 { transition-delay: 0.38s; }
+.slide.visible .d5 { transition-delay: 0.48s; }
+.slide.visible .d6 { transition-delay: 0.58s; }
+.slide.visible .d7 { transition-delay: 0.68s; }
+
+/* ===========================================
+   SLIDE 1 — TITLE with live RSVP demo
+   =========================================== */
+.title-slide { display: flex; flex-direction: column; }
+/* dimmed-page backdrop, like the real overlay */
+.rsvp-stage {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background:
+        radial-gradient(1400px 900px at 50% 40%, rgba(15,17,21,0.25), rgba(8,9,12,0.88) 78%),
+        linear-gradient(#1a1e26, #0b0d11);
+}
+/* fixation guide line + ticks at the optical reading line (~40% height) */
+.guide {
+    position: absolute; left: 0; right: 0; top: 40%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(129,140,248,0.55) 18%, rgba(129,140,248,0.55) 82%, transparent);
+    pointer-events: none;
+}
+.guide::before, .guide::after {
+    content: "";
+    position: absolute; top: -9px;
+    width: 2px; height: 20px;
+    background: rgba(129,140,248,0.55);
+}
+.guide::before { left: 22%; }
+.guide::after { right: 22%; }
+/* the flashing word */
+.rsvp-word {
+    font-family: var(--font-display);
+    font-size: 190px; font-weight: 700; letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1;
+    position: relative; z-index: 2;
+    transition: opacity 0.25s var(--ease);
+    min-height: 190px;
+    display: flex; align-items: baseline;
+}
+.rsvp-word .fx {
+    color: var(--amber);
+    text-shadow: 0 0 34px rgba(251,191,36,0.45);
+}
+.rsvp-word.fade { opacity: 0; }
+/* meta line under the demo word (real product shows wpm etc.) */
+.rsvp-meta {
+    position: absolute; z-index: 2; top: 40%; margin-top: 150px;
+    font-family: var(--font-mono);
+    font-size: 24px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--dim);
+}
+.rsvp-meta b { color: var(--indigo); font-weight: 700; }
+/* final title block — revealed after the demo finishes */
+.title-final {
+    position: relative; z-index: 3;
+    margin: auto;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+    pointer-events: none;
+}
+.title-slide.done .title-final { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.title-final h1 {
+    font-size: 168px; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95;
+}
+.title-final h1 .rr { color: var(--text); }
+.title-final h1 .dot2 { color: var(--indigo); }
+.title-final .tagline {
+    font-size: 40px; font-weight: 500; color: var(--dim);
+    margin: 34px auto 0; max-width: 1050px; line-height: 1.25;
+}
+.title-final .tagline b { color: var(--amber); font-weight: 700; }
+.badge-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 44px; }
+.badge {
+    font-family: var(--font-mono);
+    font-size: 20px; font-weight: 700;
+    padding: 10px 20px;
+    border: 2px solid var(--line);
+    background: var(--panel);
+    color: var(--dim);
+}
+.badge.hi { border-color: var(--indigo); color: var(--indigo); }
+.badge.gold { border-color: var(--amber); color: var(--amber); }
+/* CTA buttons — data-goto jumps to a slide */
+.cta-row { display: flex; gap: 22px; justify-content: center; margin-top: 52px; }
+.cta {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 26px; font-weight: 700;
+    padding: 22px 38px;
+    border: 2px solid var(--indigo);
+    background: var(--indigo-deep);
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease), background 0.15s;
+    box-shadow: 7px 7px 0 rgba(129,140,248,0.28);
+}
+.cta:hover { background: var(--indigo); transform: translate(-2px, -2px); box-shadow: 9px 9px 0 rgba(129,140,248,0.4); }
+.cta.ghost { background: transparent; color: var(--text); border-color: var(--line); box-shadow: none; }
+.cta.ghost:hover { border-color: var(--amber); color: var(--amber); background: var(--panel); }
+.cta .arrow { color: var(--amber); }
+
+/* ===========================================
+   SLIDE 2 — STATEMENT
+   =========================================== */
+.statement { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+.statement .big {
+    font-size: 132px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.04;
+    max-width: 1600px; margin-top: 40px;
+}
+.statement .big .amber {
+    color: var(--amber);
+    text-decoration: underline;
+    text-decoration-thickness: 10px;
+    text-underline-offset: 14px;
+    text-decoration-color: rgba(251,191,36,0.5);
+}
+.statement .sub {
+    font-size: 38px; font-weight: 500; color: var(--dim);
+    max-width: 1330px; margin-top: 48px; line-height: 1.4;
+}
+.statement .sub b { color: var(--text); font-weight: 700; }
+.stat-row { display: flex; gap: 22px; margin-top: 64px; flex-wrap: wrap; }
+.stat {
+    font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+    padding: 14px 24px;
+    border: 2px solid var(--line); background: var(--panel);
+    color: var(--dim);
+}
+.stat b { color: var(--indigo); font-weight: 700; }
+.stat.gold b { color: var(--amber); }
+
+/* ===========================================
+   SLIDE 3 — ENTRY MODES
+   =========================================== */
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; margin-top: 20px; }
+.mode {
+    border: 2px solid var(--line);
+    background: var(--panel);
+    padding: 46px 48px;
+    min-height: 430px;
+    display: flex; flex-direction: column; gap: 20px;
+}
+.mode .num {
+    font-family: var(--font-mono); font-size: 24px; font-weight: 700;
+    color: var(--ink); background: var(--indigo);
+    width: 54px; height: 54px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+}
+.mode:nth-child(2) .num { background: var(--amber); }
+.mode h3 { font-size: 52px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.mode p { font-size: 29px; font-weight: 500; color: var(--dim); line-height: 1.4; }
+.mode p b { color: var(--text); font-weight: 700; }
+.mode .key {
+    margin-top: auto;
+    font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+    color: var(--indigo);
+}
+.mode:nth-child(2) .key { color: var(--amber); }
+.keymap-row { display: flex; gap: 16px; margin-top: 34px; flex-wrap: wrap; }
+.keycap {
+    font-family: var(--font-mono); font-size: 21px; font-weight: 700;
+    padding: 10px 20px;
+    border: 2px solid var(--line); background: var(--panel);
+    color: var(--dim);
+}
+.keycap b { color: var(--text); font-weight: 700; }
+.keycap .k { color: var(--indigo); }
+
+/* ===========================================
+   SLIDE 4 — ENGINE
+   =========================================== */
+.feat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 16px;
+}
+.feat {
+    background: var(--panel);
+    border: 2px solid var(--line);
+    padding: 38px 40px;
+    display: flex; gap: 24px; align-items: flex-start;
+    min-height: 250px;
+}
+.feat .num {
+    font-family: var(--font-mono); font-size: 24px; font-weight: 700;
+    color: var(--amber); flex-shrink: 0;
+}
+.feat h3 { font-size: 38px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 12px; }
+.feat p { font-size: 25px; font-weight: 500; color: var(--dim); line-height: 1.4; }
+.feat p b { color: var(--text); font-weight: 700; }
+.feat.gold .num { color: var(--indigo); }
+.eng-note {
+    margin-top: 34px;
+    background: var(--indigo-deep);
+    border: 2px solid var(--ink);
+    box-shadow: 6px 6px 0 rgba(129,140,248,0.3);
+    padding: 24px 32px;
+    font-size: 27px; font-weight: 600; color: #eef;
+    display: flex; align-items: center; gap: 20px;
+}
+.eng-note .mk {
+    font-family: var(--font-mono); font-weight: 700; font-size: 20px;
+    background: var(--ink); color: var(--amber);
+    padding: 6px 14px; flex-shrink: 0;
+}
+
+/* ===========================================
+   SLIDE 5 — ALOUD (read-aloud)
+   =========================================== */
+.aloud { display: flex; gap: 80px; height: 100%; align-items: center; }
+.aloud-left { flex: 1.15; }
+.aloud-left h2 { font-size: 96px; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; margin-top: 24px; }
+.aloud-left h2 .amber { color: var(--amber); }
+.aloud-left .lede { font-size: 32px; font-weight: 500; color: var(--dim); margin-top: 30px; line-height: 1.4; max-width: 900px; }
+.aloud-left .lede b { color: var(--text); font-weight: 700; }
+.aloud-right { flex: 0.85; display: flex; flex-direction: column; gap: 22px; }
+.acard {
+    background: var(--panel);
+    border: 2px solid var(--line);
+    padding: 28px 32px;
+}
+.acard .at {
+    font-family: var(--font-mono); font-size: 19px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--indigo); margin-bottom: 10px;
+}
+.acard:nth-child(even) .at { color: var(--amber); }
+.acard .ad { font-size: 27px; font-weight: 600; line-height: 1.2; }
+.acard .ad b { color: var(--amber); font-weight: 700; }
+.wave {
+    display: flex; align-items: center; gap: 8px;
+    height: 64px; margin-top: 6px;
+}
+.wave i {
+    width: 10px; border-radius: 4px;
+    background: var(--indigo);
+    animation: eq 1.1s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.09s);
+}
+@keyframes eq {
+    0%, 100% { height: 12px; }
+    50% { height: 56px; }
+}
+
+/* ===========================================
+   SLIDE 6 — OVERLAY (screenshot + isolation)
+   =========================================== */
+.overlay-slide { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 70px; align-items: center; height: 100%; }
+.browser {
+    background: var(--panel);
+    border: 2px solid var(--line);
+    box-shadow: 14px 14px 0 rgba(129,140,248,0.14);
+    overflow: hidden;
+}
+.browser .bbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono); font-size: 19px; color: var(--dim);
+}
+.browser .bbar .dot { width: 14px; height: 14px; border-radius: 50%; }
+.browser .bbar .dot.r { background: #ff5f56; }
+.browser .bbar .dot.y { background: #ffbd2e; }
+.browser .bbar .dot.g { background: #27c93f; }
+.browser .bbar .url {
+    margin-left: 14px; padding: 6px 16px;
+    background: var(--ink); border-radius: 6px; flex: 1; text-align: center;
+    color: var(--dim);
+}
+.browser img { display: block; width: 100%; height: auto; }
+.ov-right h2 { font-size: 84px; font-weight: 700; letter-spacing: -0.02em; line-height: 0.95; margin-bottom: 30px; }
+.ov-right ul { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+.ov-right li {
+    display: flex; gap: 18px; align-items: baseline;
+    font-size: 27px; font-weight: 500; color: var(--dim); line-height: 1.35;
+}
+.ov-right li .mk { color: var(--indigo); font-weight: 700; flex-shrink: 0; }
+.ov-right li b { color: var(--text); font-weight: 700; }
+.themes { display: flex; gap: 16px; margin-top: 30px; }
+.swatch {
+    display: flex; align-items: center; gap: 12px;
+    font-family: var(--font-mono); font-size: 19px; font-weight: 700;
+    padding: 10px 18px;
+    border: 2px solid var(--line);
+    background: var(--panel); color: var(--dim);
+}
+.swatch i { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--ink); }
+.swatch i.dark { background: #0f1115; }
+.swatch i.light { background: #ffffff; }
+.swatch i.sepia { background: #f4ecd8; }
+
+/* ===========================================
+   SLIDE 7 — STATS & SETTINGS
+   =========================================== */
+.stats-slide { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 70px; align-items: center; height: 100%; }
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.metric {
+    background: var(--panel);
+    border: 2px solid var(--line);
+    padding: 30px 32px;
+}
+.metric .mv { font-size: 58px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); line-height: 1; }
+.metric .mv .u { font-size: 30px; color: var(--indigo); font-weight: 700; }
+.metric.gold .mv .u { color: var(--amber); }
+.metric .ml {
+    font-family: var(--font-mono); font-size: 19px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--dim); margin-top: 12px;
+}
+.stats-slide h2 { font-size: 84px; font-weight: 700; letter-spacing: -0.02em; line-height: 0.95; margin-bottom: 30px; }
+.stats-slide ul { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px; }
+.stats-slide li {
+    display: flex; gap: 16px; align-items: baseline;
+    font-size: 26px; font-weight: 500; color: var(--dim); line-height: 1.35;
+}
+.stats-slide li .mk { color: var(--amber); font-weight: 700; flex-shrink: 0; }
+.stats-slide li b { color: var(--text); font-weight: 700; }
+
+/* ===========================================
+   SLIDE 8 — INSTALL
+   =========================================== */
+.install-slide { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; height: 100%; }
+.install-slide h2 { font-size: 96px; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; margin-bottom: 40px; }
+.isteps { display: flex; flex-direction: column; gap: 22px; }
+.istep {
+    display: flex; align-items: center; gap: 26px;
+    background: var(--panel);
+    border: 2px solid var(--line);
+    padding: 22px 28px;
+}
+.istep .gn {
+    font-family: var(--font-mono); font-size: 26px; font-weight: 700;
+    color: var(--ink); background: var(--amber);
+    width: 52px; height: 52px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+}
+.istep p { font-size: 27px; font-weight: 600; line-height: 1.15; }
+.istep code {
+    font-family: var(--font-mono); font-weight: 700;
+    background: var(--ink); color: var(--indigo);
+    padding: 2px 10px; font-size: 23px;
+}
+.istep p small { display: block; font-size: 21px; font-weight: 500; color: var(--dim); margin-top: 4px; }
+.terminal {
+    background: #0a0c10;
+    border: 2px solid var(--line);
+    box-shadow: 12px 12px 0 rgba(129,140,248,0.14);
+}
+.terminal .bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono); font-size: 18px; color: var(--dim);
+}
+.terminal .bar .dot { width: 14px; height: 14px; border-radius: 50%; }
+.terminal .body { padding: 38px 40px; font-family: var(--font-mono); font-size: 28px; font-weight: 500; line-height: 1.8; }
+.terminal .body .c { color: #5b6472; }
+.terminal .body .p { color: var(--indigo); }
+.terminal .body .cmd { color: #e7e9ee; }
+.terminal .body .ok { color: #4ade80; }
+.terminal .body .w { color: var(--amber); }
+.install-note {
+    margin-top: 34px;
+    background: var(--panel);
+    border: 2px solid var(--line);
+    padding: 22px 28px;
+    font-size: 24px; font-weight: 500; color: var(--dim);
+    display: flex; align-items: center; gap: 16px;
+}
+.install-note .mk {
+    font-family: var(--font-mono); font-weight: 700; font-size: 18px;
+    background: var(--amber); color: var(--ink);
+    padding: 6px 12px; flex-shrink: 0;
+}
+
+/* ===========================================
+   SLIDE 9 — CLOSING
+   =========================================== */
+.closing { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; gap: 34px; }
+.closing .mark { width: 130px; height: 130px; object-fit: contain; }
+.closing h2 { font-size: 150px; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; }
+.closing h2 .amber { color: var(--amber); }
+.closing h2 .indigo { color: var(--indigo); }
+.closing .tagline { font-size: 38px; font-weight: 600; color: var(--dim); }
+.closing .stack { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+.closing .foot {
+    margin-top: 44px;
+    font-family: var(--font-mono); font-size: 20px; font-weight: 500;
+    color: var(--dim); opacity: 0.7;
+    letter-spacing: 0.08em;
+}
+.closing .foot b { color: var(--indigo); font-weight: 700; }
+
+/* ===========================================
+   NAV CHROME
+   =========================================== */
+.deck-controls { display: flex; align-items: center; gap: 14px; font-family: var(--font-mono); }
+.deck-controls button {
+    width: 48px; height: 48px;
+    border: 2px solid var(--line);
+    background: #0a0c10; color: var(--indigo);
+    font-size: 26px; font-weight: 700; cursor: pointer;
+    font-family: var(--font-mono);
+    transition: border-color 0.2s, color 0.2s;
+}
+.deck-controls button:hover { border-color: var(--indigo); color: var(--amber); }
+.deck-controls .count {
+    color: var(--dim); font-size: 18px; font-weight: 700;
+    letter-spacing: 0.12em; padding: 0 8px;
+}
+.progress-bar {
+    position: fixed; top: 0; left: 0; height: 5px;
+    background: linear-gradient(90deg, var(--indigo), var(--amber));
+    z-index: 1000;
+    transition: width 0.4s var(--ease);
+}
+
+/* ===========================================
+   INLINE EDITING (post-draft affordance)
+   =========================================== */
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle {
+    position: fixed; top: 14px; left: 14px;
+    width: 52px; height: 52px;
+    border: 1px solid var(--line);
+    background: var(--panel); color: var(--indigo);
+    font-size: 24px; cursor: pointer;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10001;
+    font-family: var(--font-mono);
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+body.editing [contenteditable] { outline: 1px dashed var(--amber); outline-offset: 4px; cursor: text; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+    <!-- === SLIDE 1: TITLE — live RSVP demo === -->
+    <section class="slide title-slide active">
+        <div class="term reveal d1"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="path">rapid-reader<b> · </b>v0.1.0</span></div>
+        <div class="rsvp-stage">
+            <div class="guide" aria-hidden="true"></div>
+            <div class="rsvp-word" id="rsvpWord" aria-hidden="true"></div>
+            <div class="rsvp-meta" aria-hidden="true"><b>300</b> wpm · <b>rsvp</b> · one word at a time</div>
+            <div class="title-final">
+                <h1>Rapid Reader<span class="dot2">.</span></h1>
+                <p class="tagline">Read anything on the web <b>3× faster</b> — one word at a time, at a fixed point, so your eyes never move.</p>
+                <div class="badge-row">
+                    <span class="badge hi">Chrome extension</span>
+                    <span class="badge gold">MV3 · TypeScript</span>
+                    <span class="badge">Alt+R to start</span>
+                    <span class="badge">Local-first</span>
+                </div>
+                <div class="cta-row">
+                    <button class="cta" data-goto="1">See it work <span class="arrow">→</span></button>
+                    <button class="cta ghost" data-goto="7">Install <span class="arrow">↓</span></button>
+                </div>
+            </div>
+        </div>
+        <div class="slug">rapid-reader · read 3× faster</div>
+        <div class="pageno">01</div>
+    </section>
+
+    <!-- === SLIDE 2: STATEMENT === -->
+    <section class="slide statement">
+        <span class="kicker indigo reveal d1">The idea</span>
+        <h1 class="big reveal d2">Your eyes <span class="amber">never move.</span></h1>
+        <p class="sub reveal d3">
+            RSVP — <b>Rapid Serial Visual Presentation</b>. Select text or start on the whole article,
+            and Rapid Reader flashes <b>one word at a time at a fixed point</b> on screen.
+            No scanning, no saccades, no re-reading. Just the words, at the pace you set.
+        </p>
+        <div class="stat-row reveal d4">
+            <span class="stat">default <b>300</b> wpm</span>
+            <span class="stat gold">range <b>100–1000</b></span>
+            <span class="stat">chunks <b>1–8</b> words</span>
+            <span class="stat gold">≈ <b>3×</b> faster than scrolling</span>
+        </div>
+        <div class="slug">the idea</div>
+        <div class="pageno">02</div>
+    </section>
+
+    <!-- === SLIDE 3: ENTRY MODES === -->
+    <section class="slide">
+        <div class="head-row">
+            <span class="kicker reveal-l d1">Start</span>
+            <h2 class="reveal-l d1">Two ways in</h2>
+        </div>
+        <div class="modes">
+            <div class="mode reveal d2">
+                <div class="num">01</div>
+                <h3>Read the selection</h3>
+                <p>Select any text on the page and press <b>Alt+R</b>. The overlay opens <b>paused at the first word</b> — press Space when you're ready.</p>
+                <span class="key">⌘ ready when you are</span>
+            </div>
+            <div class="mode reveal d3">
+                <div class="num">02</div>
+                <h3>Read the article</h3>
+                <p><b>Alt+R</b> with no selection — or the toolbar icon — highlights the <b>first word of every paragraph</b>. Click one and reading starts right there.</p>
+                <span class="key">⇧ start anywhere</span>
+            </div>
+        </div>
+        <div class="keymap-row reveal d4">
+            <span class="keycap"><span class="k">Alt+R</span> — toggle reader</span>
+            <span class="keycap">toolbar <b>icon</b> — same</span>
+            <span class="keycap">click a <b>marker</b> — start there</span>
+            <span class="keycap">re-trigger — <b>replaces</b> the session</span>
+        </div>
+        <div class="slug">start</div>
+        <div class="pageno">03</div>
+    </section>
+
+    <!-- === SLIDE 4: ENGINE === -->
+    <section class="slide">
+        <div class="head-row">
+            <span class="kicker indigo reveal-l d1">The engine</span>
+            <h2 class="reveal-l d1">Timing that feels like thought</h2>
+        </div>
+        <div class="feat-grid">
+            <div class="feat reveal d2">
+                <div class="num">01</div>
+                <div>
+                    <h3>Smart punctuation pauses</h3>
+                    <p>Commas and colons rest longer, sentence enders <b>×3</b>, paragraph breaks hold the longest — the words already on screen, not a flashing marker.</p>
+                </div>
+            </div>
+            <div class="feat gold reveal d2">
+                <div class="num">02</div>
+                <div>
+                    <h3>Multi-word chunks</h3>
+                    <p>A chunk stays up as long as its words would take one at a time — so <b>wpm means the same thing</b> at any chunk size.</p>
+                </div>
+            </div>
+            <div class="feat reveal d3">
+                <div class="num">03</div>
+                <div>
+                    <h3>Long tokens, handled</h3>
+                    <p>URLs, numbers and long words stay <b>atomic</b>; oversized tokens auto-shrink past 20 characters.</p>
+                </div>
+            </div>
+            <div class="feat gold reveal d3">
+                <div class="num">04</div>
+                <div>
+                    <h3>Drift-free playback</h3>
+                    <p><b>requestAnimationFrame</b> accumulation, not setTimeout chains. A 1000-word article holds its rhythm to the millisecond.</p>
+                </div>
+            </div>
+        </div>
+        <div class="eng-note reveal d4">
+            <span class="mk">LIVE</span>
+            <span>Speed changes while you read — <b>↑/↓ ±25 wpm</b>, delay recomputed on the fly.</span>
+        </div>
+        <div class="slug">engine</div>
+        <div class="pageno">04</div>
+    </section>
+
+    <!-- === SLIDE 5: ALOUD === -->
+    <section class="slide aloud">
+        <div class="aloud-left">
+            <span class="kicker reveal-l d1">Aloud</span>
+            <h2 class="reveal-l d2">Read with your ears, <span class="amber">in step</span>.</h2>
+            <p class="lede reveal-l d3">Aloud is a <b>mode, not a transport control</b>: it arms the voice without making a sound. Play drives everything — and the voice becomes the clock.</p>
+            <div class="wave reveal-l d4" aria-hidden="true">
+                <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i>
+            </div>
+        </div>
+        <div class="aloud-right">
+            <div class="acard reveal d3">
+                <div class="at">Measured, not trusted</div>
+                <div class="ad">Every engine event — <b>word, sentence, utterance</b> — snaps the display back onto the spoken word. A voice that ignores the requested rate is <b>timed for real</b>, not assumed.</div>
+            </div>
+            <div class="acard reveal d4">
+                <div class="at">Survives the overlay</div>
+                <div class="ad">Speech runs in the <b>service worker</b> on offline system voices — close the overlay and the reading continues.</div>
+            </div>
+            <div class="acard reveal d5">
+                <div class="at">Always a fallback</div>
+                <div class="ad">If speech dies early, the <b>wpm ticker takes back over</b> instead of freezing. No voice installed? The whole section stays hidden.</div>
+            </div>
+        </div>
+        <div class="slug">aloud</div>
+        <div class="pageno">05</div>
+    </section>
+
+    <!-- === SLIDE 6: OVERLAY === -->
+    <section class="slide overlay-slide">
+        <div class="browser reveal-l d2">
+            <div class="bbar">
+                <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                <span class="url">any article, dimmed to focus</span>
+            </div>
+            <img src="overlay.png" alt="Rapid Reader overlay flashing a word over a web article">
+        </div>
+        <div class="ov-right">
+            <span class="kicker indigo reveal-l d1">The overlay</span>
+            <h2 class="reveal-l d2">Zero style bleed</h2>
+            <ul>
+                <li class="reveal d3"><span class="mk">▸</span><span>Rendered in a <b>Shadow DOM</b> with <b>all: initial</b> — the page's CSS can't touch it, and it can't touch the page.</span></li>
+                <li class="reveal d3"><span class="mk">▸</span><span><b>Dark / light / sepia</b> themes, three font sizes, four fonts — the choice applies everywhere, reader to options page.</span></li>
+                <li class="reveal d4"><span class="mk">▸</span><span><b>Keyboard-first</b>: <b>Space</b> pause · <b>←/→</b> step · <b>↑/↓</b> speed · <b>[ / ]</b> skip 10 · <b>Esc</b> close.</span></li>
+                <li class="reveal d4"><span class="mk">▸</span><span>Control bar auto-hides while reading; <b>Hugeicons</b> throughout.</span></li>
+            </ul>
+            <div class="themes reveal d5">
+                <span class="swatch"><i class="dark"></i>dark</span>
+                <span class="swatch"><i class="light"></i>light</span>
+                <span class="swatch"><i class="sepia"></i>sepia</span>
+            </div>
+        </div>
+        <div class="slug">overlay</div>
+        <div class="pageno">06</div>
+    </section>
+
+    <!-- === SLIDE 7: STATS & SETTINGS === -->
+    <section class="slide stats-slide">
+        <div class="browser reveal-l d2">
+            <div class="bbar">
+                <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                <span class="url">chrome://extensions → options</span>
+            </div>
+            <img src="options.png" alt="Rapid Reader options page with settings and stats dashboard">
+        </div>
+        <div>
+            <span class="kicker reveal-l d1">Stats &amp; settings</span>
+            <h2 class="reveal-l d2">Proof, not vibes</h2>
+            <div class="metric-grid">
+                <div class="metric reveal d3">
+                    <div class="mv">words<span class="u"> read</span></div>
+                    <div class="ml">rolled up per day</div>
+                </div>
+                <div class="metric gold reveal d3">
+                    <div class="mv">avg <span class="u">wpm</span></div>
+                    <div class="ml">your real pace</div>
+                </div>
+                <div class="metric gold reveal d4">
+                    <div class="mv">time<span class="u"> saved</span></div>
+                    <div class="ml">vs. a 240 wpm baseline</div>
+                </div>
+                <div class="metric reveal d4">
+                    <div class="mv">90<span class="u"> days</span></div>
+                    <div class="ml">of history kept</div>
+                </div>
+            </div>
+            <ul class="reveal d5">
+                <li><span class="mk">▸</span><span>Every control saves to <b>chrome.storage.sync</b> — and a <b>storage.onChanged</b> listener applies it to every reader already open. No reload needed.</span></li>
+                <li><span class="mk">▸</span><span><b>Live preview</b> of theme, size and font right on the options page.</span></li>
+            </ul>
+        </div>
+        <div class="slug">stats</div>
+        <div class="pageno">07</div>
+    </section>
+
+    <!-- === SLIDE 8: INSTALL === -->
+    <section class="slide install-slide">
+        <div>
+            <span class="kicker reveal-l d1">Install</span>
+            <h2 class="reveal-l d2">Running in two minutes</h2>
+            <div class="isteps">
+                <div class="istep reveal-l d3">
+                    <div class="gn">1</div>
+                    <p><code>chrome://extensions</code><small>enable Developer mode, top right</small></p>
+                </div>
+                <div class="istep reveal-l d4">
+                    <div class="gn">2</div>
+                    <p><b>Load unpacked</b> → select <code>dist/</code><small>built by the commands on the right</small></p>
+                </div>
+                <div class="istep reveal-l d5">
+                    <div class="gn">3</div>
+                    <p>Open any article, press <b>Alt+R</b><small>or click the toolbar icon</small></p>
+                </div>
+            </div>
+            <div class="install-note reveal-l d6">
+                <span class="mk">LOCAL-FIRST</span>
+                <span>No accounts. No network. No telemetry. Everything runs in your browser.</span>
+            </div>
+        </div>
+        <div class="terminal reveal d3">
+            <div class="bar">
+                <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                <span>~/rapid-reader</span>
+            </div>
+            <div class="body">
+                <span class="c"># build the extension</span><br>
+                <span class="p">$</span> <span class="cmd">npm install</span><br>
+                <span class="p">$</span> <span class="cmd">npm run build</span><br>
+                <span class="c">→ dist/ content · background · options · icons</span><br>
+                <span class="ok">✓ packaged</span><br>
+                <span class="p">$</span> <span class="cmd">npm test</span><br>
+                <span class="w">⚡ tokenizer · pauses · timing · stats · tts</span><br>
+                <span class="ok">✓ all green</span>
+            </div>
+        </div>
+        <div class="slug">install</div>
+        <div class="pageno">08</div>
+    </section>
+
+    <!-- === SLIDE 9: CLOSING === -->
+    <section class="slide closing">
+        <img class="mark reveal d1" src="logo.png" alt="Rapid Reader logo">
+        <h2 class="reveal d1">Read <span class="amber">3×</span> <span class="indigo">faster.</span></h2>
+        <p class="tagline reveal d2">One word at a time · fixed point · your pace · your voice</p>
+        <div class="stack reveal d3">
+            <span class="badge hi">TypeScript</span>
+            <span class="badge gold">Vite</span>
+            <span class="badge hi">Manifest V3</span>
+            <span class="badge">Shadow DOM</span>
+            <span class="badge gold">chrome.tts</span>
+            <span class="badge">Vitest</span>
+            <span class="badge">Hugeicons</span>
+        </div>
+        <p class="foot reveal d4">rapid-reader <b>v0.1.0</b> · private project — all rights reserved</p>
+        <div class="slug">./end</div>
+        <div class="pageno">09</div>
+    </section>
+
+</main>
+</div>
+
+<!-- Nav chrome -->
+<div class="deck-controls">
+    <button id="prevBtn" aria-label="Previous slide">‹</button>
+    <span class="count" id="counter">01 / 09</span>
+    <button id="nextBtn" aria-label="Next slide">›</button>
+</div>
+
+<!-- Inline edit affordance -->
+<div class="edit-hotzone" id="editHotzone" title="Edit mode (E)"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (E)">✏️</button>
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   Fixed 16:9 stage, keyboard / touch / wheel nav
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.current = 0;
+        this.stage = document.getElementById('deckStage');
+        this.bar = document.getElementById('progressBar');
+        this.counter = document.getElementById('counter');
+        this.setupScale();
+        this.setupKeyboard();
+        this.setupTouch();
+        this.setupWheel();
+        this.setupGoto();
+        document.getElementById('nextBtn').addEventListener('click', () => this.go(this.current + 1));
+        document.getElementById('prevBtn').addEventListener('click', () => this.go(this.current - 1));
+        this.show(0);
+    }
+
+    setupScale() {
+        const scale = () => {
+            const f = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * f) / 2;
+            const y = (window.innerHeight - 1080 * f) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${f})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+
+    setupKeyboard() {
+        document.addEventListener('keydown', (e) => {
+            if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); this.go(this.current + 1); }
+            if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); this.go(this.current - 1); }
+            if (e.key === 'Home') this.go(0);
+            if (e.key === 'End') this.go(this.slides.length - 1);
+        });
+    }
+
+    setupTouch() {
+        let sx = 0, sy = 0;
+        document.addEventListener('touchstart', (e) => { sx = e.changedTouches[0].clientX; sy = e.changedTouches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - sx;
+            const dy = e.changedTouches[0].clientY - sy;
+            if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) this.go(this.current + (dx < 0 ? 1 : -1));
+        }, { passive: true });
+    }
+
+    setupWheel() {
+        let lock = false;
+        window.addEventListener('wheel', (e) => {
+            if (lock) return;
+            if (Math.abs(e.deltaY) < 30) return;
+            lock = true;
+            this.go(this.current + (e.deltaY > 0 ? 1 : -1));
+            setTimeout(() => { lock = false; }, 700);
+        }, { passive: true });
+    }
+
+    setupGoto() {
+        document.querySelectorAll('[data-goto]').forEach(btn => {
+            btn.addEventListener('click', () => this.go(parseInt(btn.dataset.goto, 10)));
+        });
+    }
+
+    go(i) { this.show(Math.max(0, Math.min(i, this.slides.length - 1))); }
+
+    show(i) {
+        this.current = i;
+        this.slides.forEach((s, idx) => {
+            s.classList.toggle('active', idx === i);
+            s.classList.toggle('visible', idx === i);
+        });
+        if (i === 0) RsvpDemo.restart();
+        const pad = (n) => String(n).padStart(2, '0');
+        this.counter.textContent = `${pad(i + 1)} / ${pad(this.slides.length)}`;
+        this.bar.style.width = ((i + 1) / this.slides.length * 100) + '%';
+    }
+}
+
+/* ===========================================
+   LIVE RSVP DEMO on the title slide.
+   Flashes a sentence word-by-word at the fixed
+   point, highlighting the real fixation character
+   (same anchor rule the extension uses), then
+   settles on the final title.
+   =========================================== */
+const RsvpDemo = (() => {
+    const SENTENCE = "Read anything on the web three times faster.";
+    const WPM = 300;                  // demo pace
+    const interval = 60000 / WPM;     // ms per word (200ms at 300wpm)
+    const wordEl = document.getElementById('rsvpWord');
+    const slide = wordEl.closest('.slide');
+    let timer = null;
+
+    // Fixation anchor per the extension's table:
+    // 1–2 chars → middle · 3–6 → 2nd from right · 7–9 → 3rd · 10+ → 4th (clamped)
+    function fixationIndex(w) {
+        const len = w.length;
+        let i;
+        if (len <= 2) i = Math.floor(len / 2);
+        else if (len <= 6) i = len - 2;
+        else if (len <= 9) i = len - 3;
+        else i = len - 4;
+        return Math.max(0, Math.min(i, len - 1));
+    }
+
+    function renderWord(w) {
+        const fx = fixationIndex(w);
+        let html = '';
+        for (let i = 0; i < w.length; i++) {
+            html += i === fx ? `<span class="fx">${w[i]}</span>` : w[i];
+        }
+        wordEl.innerHTML = html;
+    }
+
+    function step(words, i) {
+        if (i >= words.length) { finish(); return; }
+        renderWord(words[i]);
+        timer = setTimeout(() => step(words, i + 1), interval);
+    }
+
+    function finish() {
+        wordEl.classList.add('fade');
+        slide.classList.add('done');
+        setTimeout(() => { wordEl.textContent = ''; }, 400);
+    }
+
+    function restart() {
+        clearTimeout(timer);
+        slide.classList.remove('done');
+        wordEl.classList.remove('fade');
+        // Reduced motion: skip the flashing, show the final title immediately.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            slide.classList.add('done');
+            wordEl.textContent = '';
+            return;
+        }
+        const words = SENTENCE.replace(/[.]/g, '').split(' ');
+        step(words, 0);
+    }
+
+    return { restart };
+})();
+
+new SlidePresentation();
+RsvpDemo.restart();
+
+/* ===========================================
+   INLINE EDITING — hover hotzone (JS delay),
+   E key, auto-save to localStorage
+   =========================================== */
+class InlineEditor {
+    constructor() {
+        this.isActive = false;
+        this.toggle = document.getElementById('editToggle');
+        this.hotzone = document.getElementById('editHotzone');
+        this.els = Array.from(document.querySelectorAll('h1, h2, h3, p, span, a, li, .metric, .acard, .badge, .keycap, .stat, .istep p'));
+        this.hideTimer = null;
+        this.bind();
+        this.load();
+    }
+
+    bind() {
+        this.toggle.addEventListener('click', () => this.toggleEditMode());
+        this.hotzone.addEventListener('mouseenter', () => { clearTimeout(this.hideTimer); this.toggle.classList.add('show'); });
+        this.hotzone.addEventListener('mouseleave', () => {
+            this.hideTimer = setTimeout(() => { if (!this.isActive) this.toggle.classList.remove('show'); }, 400);
+        });
+        this.toggle.addEventListener('mouseenter', () => clearTimeout(this.hideTimer));
+        this.toggle.addEventListener('mouseleave', () => {
+            this.hideTimer = setTimeout(() => { if (!this.isActive) this.toggle.classList.remove('show'); }, 400);
+        });
+        this.hotzone.addEventListener('click', () => this.toggleEditMode());
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) {
+                this.toggleEditMode();
+            }
+        });
+    }
+
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('editing', this.isActive);
+        this.toggle.classList.toggle('active', this.isActive);
+        this.toggle.textContent = this.isActive ? '✓' : '✏️';
+        if (!this.isActive) this.save();
+        this.els.forEach(el => el.setAttribute('contenteditable', this.isActive ? 'true' : 'false'));
+    }
+
+    load() {
+        try {
+            const data = JSON.parse(localStorage.getItem('rapid-reader-slides-edits') || '{}');
+            this.els.forEach(el => {
+                const key = el.textContent.trim().slice(0, 60);
+                if (data[key]) el.textContent = data[key];
+            });
+        } catch (e) { /* first run */ }
+    }
+
+    save() {
+        const data = {};
+        this.els.forEach(el => { data[el.textContent.trim().slice(0, 60)] = el.textContent; });
+        try { localStorage.setItem('rapid-reader-slides-edits', JSON.stringify(data)); } catch (e) { /* storage full */ }
+    }
+}
+
+new InlineEditor();
+</script>
+</body>
+</html>
