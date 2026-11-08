@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shafiq Imtiaz | Senior Software &amp; AI Engineer</title>
-  <meta name="description" content="Senior Software and AI Engineer in Ottawa building AI platforms, agentic tools, and production full-stack systems. Explore Shafiq Imtiaz's portfolio." />
+  <title>Shafiq Imtiaz | Principal Software &amp; AI Engineer</title>
+  <meta name="description" content="Senior Software Engineer - Principal building agentic AI platforms, distributed integrations, developer tools, and full-stack products in Ontario, Canada." />
   <meta name="author" content="Shafiq Imtiaz" />
   <meta name="robots" content="index, follow, max-image-preview:large" />
   <meta name="google-site-verification" content="duge2M1WGeG4rzeDIHJBVjYJz2iWcUSTm0_PF4RiZio" />
@@ -13,7 +13,7 @@
   <link rel="canonical" href="https://shafiqimtiaz.github.io/" />
   <meta property="og:locale" content="en_CA" />
   <meta property="og:site_name" content="Shafiq Imtiaz" />
-  <meta property="og:title" content="Shafiq Imtiaz | Senior Software &amp; AI Engineer" />
+  <meta property="og:title" content="Shafiq Imtiaz | Principal Software &amp; AI Engineer" />
   <meta property="og:description" content="Senior Software and AI Engineer building AI platforms, agentic developer tooling, and production full-stack systems." />
   <meta property="og:type" content="profile" />
   <meta property="og:url" content="https://shafiqimtiaz.github.io/" />
@@ -21,7 +21,7 @@
   <meta property="og:image:alt" content="Shafiq Imtiaz profile image" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="SHAFIQ IMTIAZ // PORTFOLIO" />
-  <meta name="twitter:description" content="Selected development works, side projects, and writing." />
+  <meta name="twitter:description" content="Agentic AI engineering, enterprise integrations, and selected open-source projects by Shafiq Imtiaz." />
   <meta name="twitter:image" content="https://github.com/shafiqimtiaz.png" />
   <meta name="twitter:image:alt" content="Shafiq Imtiaz profile image" />
   <script type="application/ld+json">
@@ -32,7 +32,7 @@
           "@type": "ProfilePage",
           "@id": "https://shafiqimtiaz.github.io/#profile",
           "url": "https://shafiqimtiaz.github.io/",
-          "name": "Shafiq Imtiaz | Senior Software & AI Engineer",
+          "name": "Shafiq Imtiaz | Principal Software & AI Engineer",
           "mainEntity": { "@id": "https://shafiqimtiaz.github.io/#person" }
         },
         {
@@ -40,11 +40,10 @@
           "@id": "https://shafiqimtiaz.github.io/#person",
           "name": "Shafiq Imtiaz",
           "url": "https://shafiqimtiaz.github.io/",
-          "jobTitle": "Senior Software and AI Engineer",
-          "description": "Senior Software and AI Engineer building AI platforms, agentic developer tooling, and production full-stack systems.",
+          "jobTitle": "Senior Software Engineer - Principal",
+          "description": "Principal-level software engineer building multi-agent systems, enterprise integrations, and full-stack products.",
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": "Ottawa",
             "addressRegion": "ON",
             "addressCountry": "CA"
           },
@@ -68,6 +67,7 @@
       --font-size-base: 16px;
       --font-weight-base: 400;
       --line-height-base: 25.6px;
+      --font-size-sm: 0.875rem;
 
       --color-text-primary: #f4f7f3;
       --color-text-secondary: #9aa39a;
@@ -399,6 +399,79 @@
       color: var(--color-text-tertiary);
     }
 
+
+    /* Profile, impact, and career */
+    .section-note {
+      color: var(--color-text-secondary);
+      margin: 0 0 var(--space-6);
+      max-width: 72ch;
+    }
+    .section-note strong,
+    .about-copy strong { color: var(--color-text-primary); font-weight: 500; }
+    .about-copy {
+      color: var(--color-text-secondary);
+      max-width: 72ch;
+      margin: 0 0 var(--space-6);
+    }
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-6) 0;
+    }
+    .impact {
+      background: var(--color-surface-raised);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      min-width: 0;
+    }
+    .impact strong {
+      color: var(--color-text-tertiary);
+      display: block;
+      font-size: 1.45rem;
+      line-height: 1.2;
+      margin-bottom: var(--space-2);
+      overflow-wrap: anywhere;
+    }
+    .impact span { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+    .stack-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .stack-list li {
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-xs);
+      padding: var(--space-1) var(--space-3);
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    .career-list {
+      display: grid;
+      gap: var(--space-4);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .career-list li {
+      display: grid;
+      grid-template-columns: 170px minmax(0, 1fr);
+      gap: var(--space-4);
+      padding: var(--space-5);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+    }
+    .career-list time { color: var(--color-text-tertiary); font-size: var(--font-size-sm); }
+    .career-list strong { color: var(--color-text-primary); font-weight: 500; display: block; }
+    .career-list p { color: var(--color-text-secondary); margin: var(--space-2) 0 0; font-size: var(--font-size-sm); }
+    .linkline { margin: var(--space-5) 0 0; color: var(--color-text-secondary); }
+    .linkline a { color: var(--color-text-tertiary); text-underline-offset: 3px; }
+    .linkline a:focus-visible { outline-offset: 4px; }
+
     /* Empty-state for future works */
     .more {
       margin-top: var(--space-5);
@@ -442,6 +515,8 @@
       h1.name { font-size: 1.75rem; }
       .status { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
       article.project { padding: var(--space-5); }
+      .impact { padding: var(--space-5); }
+      .career-list li { grid-template-columns: 1fr; gap: var(--space-2); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -458,30 +533,97 @@
 
   <main id="main" class="page">
     <div class="status" role="status" aria-live="polite">
-      <span><span class="dot" aria-hidden="true"></span>available for collaboration</span>
-      <span class="meta">build <strong>2026.06.04</strong> // index.html</span>
+      <span><span class="dot" aria-hidden="true"></span>building AI systems and developer tools</span>
+      <span class="meta">portfolio <strong>2026</strong> // Ontario, Canada</span>
     </div>
 
     <header class="hero">
       <p class="prompt" aria-hidden="true">$ <span class="who">shafiq</span><span class="sep">@</span><span class="who">portfolio</span> <span class="sep">~</span> <span class="cmd">./intro</span></p>
-      <h1 class="name">Shafiq Imtiaz <span class="slash">//</span> <span class="tag">Engineer</span></h1>
+      <h1 class="name">Shafiq Imtiaz <span class="slash">//</span> <span class="tag">AI Engineer</span></h1>
       <p class="tagline">
-        I build <strong>developer tools</strong>, <strong>AI integrations</strong>, and
-        <strong>shipping-focused</strong> web apps. I like clean abstractions, fast feedback
-        loops, and reading source code for breakfast.
+        Senior Software Engineer - Principal at <strong>Flexspring</strong>. I build
+        <strong>multi-agent AI platforms</strong>, enterprise integrations, developer tooling,
+        and <strong>full-stack systems</strong> that make complex work simpler.
       </p>
       <ul class="actions" aria-label="Primary links">
+        <li><a href="https://shafiqimtiaz.vercel.app/" rel="noopener noreferrer">Full portfolio <span class="arrow" aria-hidden="true">↗</span></a></li>
         <li><a href="https://github.com/shafiqimtiaz" rel="noopener noreferrer">GitHub <span class="arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="https://shafiqimtiaz.vercel.app/" rel="noopener noreferrer">Writing <span class="arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="mailto:shafiq.imtiaz@proton.me">Email <span class="arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="https://linkedin.com/in/shafiqimtiaz" rel="noopener noreferrer">LinkedIn <span class="arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="https://shafiqimtiaz.vercel.app/docs/Resume-Shafiq-Imtiaz.pdf" rel="noopener noreferrer">Résumé <span class="arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="mailto:shafiqimtiaz@gmail.com">Email <span class="arrow" aria-hidden="true">↗</span></a></li>
       </ul>
     </header>
 
-    <section class="works" aria-labelledby="works-heading">
+
+    <section class="works" id="about" aria-labelledby="about-heading">
       <div class="section-head">
-        <h2 id="works-heading">Works</h2>
+        <h2 id="about-heading">About / impact</h2>
         <span class="line" aria-hidden="true"></span>
-        <span class="count">03 selected</span>
+        <span class="count">production AI + full stack</span>
+      </div>
+      <p class="about-copy">
+        I design and ship AI-assisted workflows and distributed software, from
+        <strong>RAG, MCP, and agent orchestration</strong> to Spring Boot services,
+        React products, and AWS infrastructure. At Flexspring, I lead work on an
+        agentic integration builder that turns client requirements into working HR integrations,
+        with specialists reviewing the decisions.
+      </p>
+      <div class="impact-grid" aria-label="Selected engineering impact">
+        <div class="impact"><strong>2 weeks → 2 hours</strong><span>Integration setup using multi-agent workflows</span></div>
+        <div class="impact"><strong>2,500+</strong><span>B2B client configurations supported</span></div>
+        <div class="impact"><strong>50,000+</strong><span>Integrations analysed using AI-assisted review</span></div>
+        <div class="impact"><strong>8,000+</strong><span>Active integrations supported by credential management</span></div>
+      </div>
+      <p class="section-note">I also build open-source utilities and independent products, including
+        <strong>Kemon Poray</strong>, a professor and university rating platform for students in Bangladesh.
+      </p>
+    </section>
+
+    <section class="works" id="skills" aria-labelledby="skills-heading">
+      <div class="section-head">
+        <h2 id="skills-heading">Technical focus</h2>
+        <span class="line" aria-hidden="true"></span>
+      </div>
+      <p class="section-note">AI engineering, full-stack development, distributed systems, and practical developer experience.</p>
+      <ul class="stack-list" aria-label="Core technologies">
+        <li>TypeScript / JavaScript</li><li>Java / Spring Boot</li><li>Python</li>
+        <li>React / Next.js</li><li>Node.js / Quarkus</li><li>LLMs / RAG / MCP</li>
+        <li>Agent orchestration</li><li>Amazon Bedrock</li><li>PostgreSQL / MongoDB</li>
+        <li>Redis</li><li>AWS S3 / SQS</li><li>Docker / Kubernetes</li>
+      </ul>
+    </section>
+
+    <section class="works" id="experience" aria-labelledby="experience-heading">
+      <div class="section-head">
+        <h2 id="experience-heading">Experience</h2>
+        <span class="line" aria-hidden="true"></span>
+      </div>
+      <ol class="career-list">
+        <li><time datetime="2026-08">Aug 2026 – present</time><div>
+          <strong>Senior Software Engineer - Principal · Flexspring</strong>
+          <p>Technical leadership on agentic HR integrations, AI developer tooling, and platform architecture.</p>
+        </div></li>
+        <li><time datetime="2024-05">May 2024 – Aug 2026</time><div>
+          <strong>Software Engineer - R&amp;D and AI · Flexspring</strong>
+          <p>AI data mapping, integration review, cross-service products, microservices, and secure file and credential infrastructure.</p>
+        </div></li>
+        <li><time datetime="2023-05">May 2023 – May 2024</time><div>
+          <strong>Software Engineer Intern · Flexspring</strong>
+          <p>Frontend component systems, credentials workflows, and Java / Spring Boot modernization.</p>
+        </div></li>
+        <li><time datetime="2019-04">Apr 2019 – Jun 2021</time><div>
+          <strong>Full Stack Software Developer · BSRM</strong>
+          <p>Inventory, procurement, vendor integration, and manufacturing planning tools.</p>
+        </div></li>
+      </ol>
+      <p class="linkline">More case studies and details: <a href="https://shafiqimtiaz.vercel.app/#work">view full portfolio →</a></p>
+    </section>
+
+    <section class="works" id="projects" aria-labelledby="works-heading">
+      <div class="section-head">
+        <h2 id="works-heading">Selected projects</h2>
+        <span class="line" aria-hidden="true"></span>
+        <span class="count">07 selected</span>
       </div>
 
       <div class="grid">
@@ -491,13 +633,13 @@
             <span class="tag" aria-hidden="true">[2026]</span>
           </header>
           <p>
-            An AI-powered bookmark organizer. Capture, classify, and surface the links
-            that actually matter — minimal chrome, semantic search, slide-show mode.
+            An AI-powered Chrome bookmark organizer using on-device intelligence to sort
+            and surface saved links without sending your browsing data to a backend.
           </p>
           <ul class="links" aria-label="Project links">
             <li><a class="arrow-link" href="./clean-bookmarks/" rel="noopener">Open deck →</a></li>
             <li><a href="https://github.com/shafiqimtiaz/clean-bookmarks" rel="noopener noreferrer">Source</a></li>
-            <li><span class="label">stack:</span> <span class="value">vanilla · web</span></li>
+            <li><span class="label">stack:</span> <span class="value">typescript · chrome mv3 · on-device ai</span></li>
           </ul>
         </article>
 
@@ -507,13 +649,13 @@
             <span class="tag" aria-hidden="true">[2026]</span>
           </header>
           <p>
-            An RSVP speed-reading extension for Chrome. Read anything on the web
-            3× faster — one word at a time at a fixed point, so your eyes never move.
+            An RSVP speed-reading extension for Chrome, with one-word and multi-word
+            reading modes, punctuation-aware timing, and read-aloud support.
           </p>
           <ul class="links" aria-label="Project links">
             <li><a class="arrow-link" href="./dash-reader/" rel="noopener">Open deck →</a></li>
             <li><a href="https://github.com/shafiqimtiaz/dash-reader" rel="noopener noreferrer">Source</a></li>
-            <li><span class="label">stack:</span> <span class="value">chrome mv3 · typescript</span></li>
+            <li><span class="label">stack:</span> <span class="value">typescript · chrome mv3 · speech</span></li>
           </ul>
         </article>
 
@@ -533,11 +675,61 @@
             <li><span class="label">stack:</span> <span class="value">chrome mv3 · javascript</span></li>
           </ul>
         </article>
+        <article class="project" aria-labelledby="p4-title">
+          <header><h3 id="p4-title">Kemon Poray</h3><span class="tag" aria-hidden="true">[product]</span></header>
+          <p>An independent professor and university rating platform for Bangladesh, with anonymous reviews, university discovery, and AI-assisted moderation.</p>
+          <ul class="links" aria-label="Project links">
+            <li><a class="arrow-link" href="https://www.kemonporay.com/" rel="noopener noreferrer">Live product →</a></li>
+            <li><a href="https://github.com/shafiqimtiaz/kemon-poray" rel="noopener noreferrer">Source</a></li>
+            <li><span class="label">stack:</span> <span class="value">next.js · postgresql · ai</span></li>
+          </ul>
+        </article>
+
+        <article class="project" aria-labelledby="p5-title">
+          <header><h3 id="p5-title">nexus-ai</h3><span class="tag" aria-hidden="true">[agent]</span></header>
+          <p>An agent-first academic workspace connecting Google Classroom, Google Calendar, Discord, and Slack through conversational AI and MCP.</p>
+          <ul class="links" aria-label="Project links">
+            <li><a class="arrow-link" href="https://nexus-ai-tool.vercel.app/" rel="noopener noreferrer">Live demo →</a></li>
+            <li><a href="https://github.com/shafiqimtiaz/nexus-ai" rel="noopener noreferrer">Source</a></li>
+            <li><span class="label">stack:</span> <span class="value">gemini · vercel ai sdk · mcp</span></li>
+          </ul>
+        </article>
+
+        <article class="project" aria-labelledby="p6-title">
+          <header><h3 id="p6-title">ctx-handoff</h3><span class="tag" aria-hidden="true">[cli]</span></header>
+          <p>Agent-agnostic command-line tool for securely handing off AI coding session context between tools and environments.</p>
+          <ul class="links" aria-label="Project links">
+            <li><a class="arrow-link" href="https://github.com/shafiqimtiaz/ctx-handoff" rel="noopener noreferrer">Source →</a></li>
+            <li><span class="label">stack:</span> <span class="value">typescript · cli · encryption</span></li>
+          </ul>
+        </article>
+
+        <article class="project" aria-labelledby="p7-title">
+          <header><h3 id="p7-title">pokégent</h3><span class="tag" aria-hidden="true">[cli]</span></header>
+          <p>A playful terminal dashboard for understanding local AI coding agents, MCP servers, and tool usage through a Pokémon-inspired interface.</p>
+          <ul class="links" aria-label="Project links">
+            <li><a class="arrow-link" href="https://github.com/shafiqimtiaz/pokegent" rel="noopener noreferrer">Source →</a></li>
+            <li><span class="label">stack:</span> <span class="value">typescript · ink · node.js</span></li>
+          </ul>
+        </article>
       </div>
 
       <p class="more" aria-live="polite">
-        more in progress <span class="blink" aria-hidden="true">_</span>
+        exploring more tools and products <span class="blink" aria-hidden="true">_</span>
       </p>
+    </section>
+
+
+    <section class="works" id="education" aria-labelledby="education-heading">
+      <div class="section-head"><h2 id="education-heading">Education / credential</h2><span class="line" aria-hidden="true"></span></div>
+      <ol class="career-list">
+        <li><time datetime="2022">2022 – 2024</time><div><strong>MEng, Software Engineering (Co-op)</strong>
+          <p>Concordia University · Montréal, Canada</p></div></li>
+        <li><time datetime="2015">2015 – 2018</time><div><strong>BSc, Electrical &amp; Electronics Engineering</strong>
+          <p>Islamic University of Technology · Bangladesh</p></div></li>
+      </ol>
+      <p class="linkline">AWS Certified AI Practitioner · <a href="https://www.credly.com/badges/f33dbc99-4952-4c46-ab20-0e303d253724" rel="noopener noreferrer">verify certification →</a></p>
+      <p class="linkline">Get in touch: <a href="mailto:shafiqimtiaz@gmail.com">shafiqimtiaz@gmail.com</a> · <a href="https://linkedin.com/in/shafiqimtiaz" rel="noopener noreferrer">LinkedIn</a></p>
     </section>
 
     <footer>
@@ -546,6 +738,8 @@
         <a href="https://github.com/shafiqimtiaz/shafiqimtiaz.github.io" rel="noopener noreferrer">source</a>
         ·
         <a href="./DESIGN.md">design.md</a>
+        ·
+        <a href="https://shafiqimtiaz.vercel.app/" rel="noopener noreferrer">full portfolio</a>
       </span>
     </footer>
   </main>
